@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jay Consejo — Approved Homepage Layout (Option C: The Narrative)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #0B0B0F;
+    --bg-elevated: #141418;
+    --bg-surface: #1A1A20;
+    --text-primary: #F5F0EB;
+    --text-secondary: #B0ADA8;
+    --text-muted: #6B6B73;
+    --accent: #C8A87E;
+    --accent-light: #E8D5B8;
+    --accent-dim: #C8A87E33;
+    --border: #222228;
+    --border-subtle: #1a1a1f;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 32px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 96px;
+  }
+
+  .header-label {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+
+  .header-approved {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #0B0B0F;
+    background: var(--accent);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    margin-left: 12px;
+    font-weight: 600;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 0%, #999 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header p {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .header .context {
+    margin-top: 32px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .context-tag {
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .context-tag.gold {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  /* Wireframe Container */
+  .wireframe {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+
+  .wireframe-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .wireframe-nav .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--text-primary);
+  }
+
+  .wireframe-nav .nav-links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .wireframe-nav .nav-links span {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .wireframe-nav .nav-cta {
+    font-size: 12px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-weight: 500;
+  }
+
+  /* Wireframe Sections */
+  .wf-section {
+    padding: 48px 32px;
+    border-bottom: 1px solid var(--border-subtle);
+    position: relative;
+  }
+
+  .wf-section:last-child {
+    border-bottom: none;
+  }
+
+  .wf-section-tag {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  /* Hero narrative */
+  .hero-narrative {
+    padding: 80px 48px;
+    text-align: left;
+    max-width: 800px;
+  }
+
+  .hero-narrative .greeting {
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .hero-narrative h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+  }
+
+  .hero-narrative h2 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .hero-narrative .intro {
+    font-size: 18px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 16px;
+    max-width: 600px;
+  }
+
+  .hero-narrative .intro-detail {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 560px;
+    margin-bottom: 36px;
+  }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-row.center { justify-content: center; }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-outline {
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 24px 16px;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* Section heading */
+  .section-heading {
+    margin-bottom: 8px;
+  }
+
+  .section-heading .overline {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .section-heading h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  .section-heading p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  .section-heading.center {
+    text-align: center;
+  }
+
+  .section-heading.center p {
+    margin: 0 auto;
+  }
+
+  /* Process steps */
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .process-step {
+    padding: 24px;
+    position: relative;
+  }
+
+  .process-step .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    color: var(--accent-dim);
+    margin-bottom: 12px;
+    display: block;
+    line-height: 1;
+  }
+
+  .process-step h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .process-step p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Content cards */
+  .wf-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .wf-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 32px;
+    transition: border-color 0.2s;
+  }
+
+  .wf-card:hover {
+    border-color: var(--accent-dim);
+  }
+
+  .wf-card .card-tag {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .wf-card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .wf-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* About split */
+  .about-split {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+    align-items: start;
+    margin-top: 24px;
+  }
+
+  .about-photo {
+    width: 280px;
+    height: 340px;
+    border-radius: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+
+  .about-text h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 16px;
+    max-width: 520px;
+  }
+
+  /* Skills */
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .skill-pill {
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+
+  .skill-pill.highlight {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  /* CTA Section */
+  .cta-section {
+    text-align: center;
+    padding: 64px 32px;
+  }
+
+  .cta-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+
+  .cta-section p {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* CTA Form */
+  .cta-form {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+  }
+
+  .cta-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cta-form label {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .cta-form input {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .cta-form input:focus {
+    border-color: var(--accent);
+  }
+
+  .cta-form input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .cta-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .cta-form .form-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 4px;
+  }
+
+  .cta-form .form-note .note-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .cta-form .form-note p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    text-align: left;
+  }
+
+  .cta-form .form-note p strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .cta-submit {
+    display: inline-block;
+    padding: 16px 40px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    margin-top: 8px;
+    width: 100%;
+    transition: background 0.2s;
+  }
+
+  .cta-submit:hover {
+    background: var(--accent-light);
+  }
+
+  .cta-timeline {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+
+  .cta-timeline .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .cta-timeline .step .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+  }
+
+  .cta-timeline .step-arrow {
+    color: var(--border);
+    font-size: 14px;
+  }
+
+  /* Footer wireframe */
+  .wf-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .wf-footer .social {
+    display: flex;
+    gap: 16px;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  /* Section specs */
+  .specs {
+    margin-top: 48px;
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .spec-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .spec-card .spec-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .spec-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .spec-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .spec-card .spec-tokens {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .spec-card .spec-tokens span {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--bg-surface);
+    color: var(--accent);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  /* Hero Variants */
+  .variants-intro {
+    margin-top: 24px;
+    margin-bottom: 40px;
+    padding: 32px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .variants-intro h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+
+  .variants-intro p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 720px;
+    margin-bottom: 10px;
+  }
+
+  .variant-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  .variant-card .variant-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+  }
+
+  .variant-card .variant-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .variant-card .variant-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--accent);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .variant-card .variant-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+  }
+
+  .variant-card .variant-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .variant-card .variant-audience {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .variant-card .variant-hero {
+    padding: 64px 48px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .variant-card .variant-hero .greeting {
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .variant-card .variant-hero h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+    max-width: 720px;
+  }
+
+  .variant-card .variant-hero h2 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .variant-card .variant-hero .intro {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    max-width: 600px;
+  }
+
+  .variant-card .variant-hero .intro-detail {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 560px;
+    margin-bottom: 32px;
+  }
+
+  .variant-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .variant-meta-cell {
+    padding: 24px 32px;
+  }
+
+  .variant-meta-cell + .variant-meta-cell {
+    border-left: 1px solid var(--border-subtle);
+  }
+
+  .variant-meta-cell h5 {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .variant-meta-cell p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .variant-meta-cell .keyword-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .variant-meta-cell .keyword-pills span {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* Dual-path cards inside Option C */
+  .dual-path {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+    max-width: 640px;
+  }
+
+  .dual-path .path-card {
+    padding: 20px 22px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .dual-path .path-card:hover {
+    border-color: var(--accent);
+  }
+
+  .dual-path .path-card .path-tag {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .dual-path .path-card h5 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .dual-path .path-card p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .dual-path .path-card .path-arrow {
+    font-size: 18px;
+    color: var(--accent);
+    margin-top: 8px;
+  }
+
+  /* Recommendation block */
+  .recommendation {
+    background: linear-gradient(135deg, rgba(200, 168, 126, 0.08) 0%, rgba(200, 168, 126, 0.02) 100%);
+    border: 1px solid var(--accent-dim);
+    border-radius: 20px;
+    padding: 40px;
+    margin-top: 24px;
+    margin-bottom: 48px;
+  }
+
+  .recommendation .rec-label {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--bg-primary);
+    background: var(--accent);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .recommendation h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .recommendation p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 14px;
+    max-width: 760px;
+  }
+
+  .recommendation p strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .recommendation .rec-reasons {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .recommendation .rec-reasons h4 {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .recommendation .rec-reasons ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .recommendation .rec-reasons li {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    padding-left: 24px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .recommendation .rec-reasons li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container { padding: 48px 20px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .process-steps { grid-template-columns: 1fr 1fr; }
+    .wf-grid-2 { grid-template-columns: 1fr; }
+    .about-split { grid-template-columns: 1fr; }
+    .about-photo { width: 100%; height: 240px; }
+    .wireframe-nav .nav-links { display: none; }
+    .hero-narrative { padding: 48px 24px; }
+    .wf-section { padding: 36px 20px; }
+    .cta-form .form-row { grid-template-columns: 1fr; }
+    .cta-timeline { flex-direction: column; align-items: center; gap: 12px; }
+    .cta-timeline .step-arrow { transform: rotate(90deg); }
+    .specs-grid { grid-template-columns: 1fr; }
+    .variant-card .variant-hero { padding: 36px 24px; }
+    .variant-meta { grid-template-columns: 1fr; }
+    .variant-meta-cell + .variant-meta-cell { border-left: none; border-top: 1px solid var(--border-subtle); }
+    .dual-path { grid-template-columns: 1fr; }
+    .variant-card .variant-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; }
+    .recommendation { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="header-label">Homepage Layout</span>
+    <span class="header-approved">Approved</span>
+    <h1>Jay Consejo</h1>
+    <p>Final layout for jayconsejo.com using the approved <strong style="color: var(--accent);">Option C &mdash; The Narrative</strong> direction, built on the <strong style="color: var(--accent);">Obsidian Luxe</strong> brand. Updated with real project details and the new AI Executive Assistant CTA flow.</p>
+    <div class="context">
+      <span class="context-tag gold">Obsidian Luxe</span>
+      <span class="context-tag gold">The Narrative</span>
+      <span class="context-tag">Personal Portfolio</span>
+      <span class="context-tag">Full-Stack Builder</span>
+      <span class="context-tag">AI-First Founder</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- NARRATIVE HERO — 3 DIRECTIONS -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="section-label">Narrative Hero &mdash; Three Directions</div>
+
+  <div class="variants-intro">
+    <h3>One page, two audiences &mdash; which do we lead with?</h3>
+    <p>You serve two distinct client types: <strong style="color: var(--accent);">founders</strong> who want a technical partner to build an AI product, and <strong style="color: var(--accent);">business owners</strong> who want AI integrated into their company's operations. Each audience searches with different keywords, speaks different language, and is sold differently.</p>
+    <p>Below are three hero directions. Each keeps the rest of the page identical (Trust Signals, Process, Proof, About, CTA) &mdash; only the hero changes. SEO notes show what each targets on Google.</p>
+  </div>
+
+  <!-- ────────────────────────────────── -->
+  <!-- OPTION A — The Builder (current) -->
+  <!-- ────────────────────────────────── -->
+  <div class="variant-card">
+    <div class="variant-header">
+      <div class="variant-label">
+        <div class="variant-letter">A</div>
+        <div>
+          <div class="variant-title">The Builder</div>
+          <div class="variant-subtitle">Current direction &mdash; founder-focused</div>
+        </div>
+      </div>
+      <div class="variant-audience">For Founders</div>
+    </div>
+
+    <div class="variant-hero">
+      <div class="greeting">Hey, I'm Jay.</div>
+      <h2>I build AI-powered products that founders <em>actually ship</em>.</h2>
+      <div class="intro">Four products shipped across AI, Web, and Web3 &mdash; from an AI news platform serving personalized digests, to a video production studio automating YouTube workflows, to an on-chain verification system on Base.</div>
+      <div class="intro-detail">Each one architected, built, and deployed solo with AI-assisted development. I don't do decks. I do products.</div>
+      <div class="btn-row">
+        <button class="btn-primary">See How I Work</button>
+        <button class="btn-outline">Skip to Projects</button>
+      </div>
+    </div>
+
+    <div class="variant-meta">
+      <div class="variant-meta-cell">
+        <h5>Who this speaks to</h5>
+        <p>Startup founders, early-stage CTOs, product leads looking for a technical partner who can ship an AI-native product without a full engineering team.</p>
+        <p style="color: var(--text-muted);">Best if 70%+ of your pipeline is startup / product-build clients.</p>
+      </div>
+      <div class="variant-meta-cell">
+        <h5>SEO &amp; keyword targets</h5>
+        <p>Narrow, high-intent queries. Great for capturing technical buyers who already know what they want.</p>
+        <div class="keyword-pills">
+          <span>ai product developer</span>
+          <span>fractional CTO</span>
+          <span>solo technical founder</span>
+          <span>next.js ai engineer</span>
+          <span>build ai mvp</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────── -->
+  <!-- OPTION B — The Integrator -->
+  <!-- ────────────────────────────────── -->
+  <div class="variant-card">
+    <div class="variant-header">
+      <div class="variant-label">
+        <div class="variant-letter">B</div>
+        <div>
+          <div class="variant-title">The Integrator</div>
+          <div class="variant-subtitle">NEW &mdash; business-owner focused</div>
+        </div>
+      </div>
+      <div class="variant-audience">For Business Owners</div>
+    </div>
+
+    <div class="variant-hero">
+      <div class="greeting">Running a business? Let's talk AI.</div>
+      <h2>I help companies <em>actually use</em> AI &mdash; not just talk about it.</h2>
+      <div class="intro">From internal workflows that save your team 20+ hours a week, to customer-facing AI that opens new revenue lines &mdash; I build and deploy AI systems inside real businesses.</div>
+      <div class="intro-detail">No hype. No endless decks. A working AI system inside your company in weeks, not quarters &mdash; backed by a 19-agent dev pipeline that moves faster than a traditional agency.</div>
+      <div class="btn-row">
+        <button class="btn-primary">See What's Possible</button>
+        <button class="btn-outline">Book a Discovery Call</button>
+      </div>
+    </div>
+
+    <div class="variant-meta">
+      <div class="variant-meta-cell">
+        <h5>Who this speaks to</h5>
+        <p>SMB owners, operations leaders, traditional service companies, and mid-sized teams that know they "should be using AI" but don't know where to start.</p>
+        <p style="color: var(--text-muted);">Best if you want to grow the <em>AI integration consulting</em> side of the agency &mdash; typically higher volume, less technical buyers, faster close.</p>
+      </div>
+      <div class="variant-meta-cell">
+        <h5>SEO &amp; keyword targets</h5>
+        <p>Broader, higher-volume queries. Excellent for local Metro Manila search and SMB discovery.</p>
+        <div class="keyword-pills">
+          <span>ai integration for business</span>
+          <span>ai consultant philippines</span>
+          <span>ai automation services</span>
+          <span>ai for small business</span>
+          <span>business ai transformation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────── -->
+  <!-- OPTION C — The Dual Path -->
+  <!-- ────────────────────────────────── -->
+  <div class="variant-card">
+    <div class="variant-header">
+      <div class="variant-label">
+        <div class="variant-letter">C</div>
+        <div>
+          <div class="variant-title">The Dual Path</div>
+          <div class="variant-subtitle">NEW &mdash; serves both audiences with a fork</div>
+        </div>
+      </div>
+      <div class="variant-audience">Both Audiences</div>
+    </div>
+
+    <div class="variant-hero">
+      <div class="greeting">Hey, I'm Jay.</div>
+      <h2>I build AI that <em>actually ships</em> &mdash; whether it's your product or your business.</h2>
+      <div class="intro">Two kinds of clients work with me. Founders who need a technical partner to build their next AI product. And business owners who want AI working inside their company &mdash; not just slides about it.</div>
+      <div class="intro-detail" style="margin-bottom: 20px;">Pick your path:</div>
+      <div class="dual-path">
+        <div class="path-card">
+          <span class="path-tag">Track 1</span>
+          <h5>I'm building a product</h5>
+          <p>You have an idea or early prototype. You need someone who can architect, build, and ship it.</p>
+          <div class="path-arrow">&rarr;</div>
+        </div>
+        <div class="path-card">
+          <span class="path-tag">Track 2</span>
+          <h5>I want AI in my business</h5>
+          <p>You run a company. You want AI working inside it &mdash; workflows, agents, automations.</p>
+          <div class="path-arrow">&rarr;</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="variant-meta">
+      <div class="variant-meta-cell">
+        <h5>Who this speaks to</h5>
+        <p>Both audiences explicitly. Each visitor self-selects into their track, so the downstream page content can stay shared (Process, Proof, About, CTA) without losing specificity.</p>
+        <p style="color: var(--text-muted);">Best if your pipeline is roughly balanced (40/60 either way) and you don't want to pick a lane yet.</p>
+      </div>
+      <div class="variant-meta-cell">
+        <h5>SEO &amp; keyword targets</h5>
+        <p>Captures both intent sets. H1 contains "AI", "build", "product", and "business" &mdash; the four anchors Google needs to rank you for both audiences.</p>
+        <div class="keyword-pills">
+          <span>ai product + integration</span>
+          <span>ai developer consultant</span>
+          <span>build ai for business</span>
+          <span>ai engineer philippines</span>
+          <span>ai for founders and smbs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────── -->
+  <!-- MY RECOMMENDATION -->
+  <!-- ────────────────────────────────── -->
+  <div class="recommendation">
+    <span class="rec-label">My Recommendation</span>
+    <h3>Lead with Option C &mdash; The Dual Path</h3>
+    <p>Your portfolio honestly serves two buyers, and forcing one hero means losing half your pipeline before they've read a sentence. <strong>Option C</strong> solves this without diluting the brand: the H1 stays confident and specific, then visitors self-select into the track that matches their need &mdash; and from that point on the page stays identical.</p>
+    <p>On SEO, Option C actually outperforms the narrower options for your situation because your authority signals (portfolio, LinkedIn, Metro Manila location) are <em>also</em> dual-track. Google rewards pages that match the searcher's intent; when two intents live on one page, H1 clarity matters more than keyword density. The dual-path pattern is battle-tested: Stripe, Linear, Vercel, and Gumroad all use variants of it on their homepage today.</p>
+
+    <div class="rec-reasons">
+      <h4>Why this direction</h4>
+      <ul>
+        <li><strong>Dual-audience reality</strong> &mdash; Your real ICP is both. Don't artificially narrow the funnel on the highest-traffic page.</li>
+        <li><strong>SEO coverage</strong> &mdash; Captures both "build me an AI product" and "integrate AI into my company" keyword clusters without splitting into two sites.</li>
+        <li><strong>Conversion hygiene</strong> &mdash; Each visitor lands in the track that matches their language. Bounce rate drops, time-on-page climbs, both boost SEO.</li>
+        <li><strong>Future-proofing</strong> &mdash; As the agency scales, each track can deepen into its own sub-page (/products, /ai-integration) without a rebrand.</li>
+      </ul>
+    </div>
+
+    <p style="margin-top: 24px; font-size: 13px; color: var(--text-muted);"><strong style="color: var(--text-secondary);">The trade-off:</strong> Option C sacrifices a small amount of hero-copy punch compared to A or B. If your pipeline is heavily skewed (80%+) toward one audience in the next 3&ndash;6 months, pick that lane instead &mdash; specificity converts better than breadth.</p>
+    <p style="font-size: 13px; color: var(--text-muted);"><strong style="color: var(--text-secondary);">Open question for you:</strong> Of your last 10 inbound conversations, how many were founders vs. business owners? That ratio decides whether we go Dual Path (C) or commit to one lane (A or B).</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- THE NARRATIVE — FINAL LAYOUT -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="section-label">Final Page Flow &mdash; Wireframe (currently showing Option A)</div>
+
+  <div class="wireframe">
+    <!-- Nav (minimal, confident) -->
+    <div class="wireframe-nav">
+      <div class="logo">JDC</div>
+      <div class="nav-links">
+        <span>Work</span>
+        <span>Process</span>
+        <span>About</span>
+      </div>
+      <div class="nav-cta">Let's Talk</div>
+    </div>
+
+    <!-- ════════════════════════════════════ -->
+    <!-- SECTION 1 — Narrative Hero -->
+    <!-- ════════════════════════════════════ -->
+    <div class="wf-section" style="padding: 0;">
+      <div class="wf-section-tag">Section 1 &mdash; Narrative Hero</div>
+      <div class="hero-narrative">
+        <div class="greeting">Hey, I'm Jay.</div>
+        <h2>I build AI-powered products<br>that founders <em>actually ship</em>.</h2>
+        <div class="intro">Four products built across web, AI, and Web3 &mdash; from an AI news platform serving personalized digests, to a video production studio automating YouTube workflows, to an on-chain campaign verification system on Base.</div>
+        <div class="intro-detail">Each project was architected, built, and deployed as a solo founder with AI-assisted development. I don't do decks. I do products.</div>
+        <div class="btn-row">
+          <button class="btn-primary">See How I Work</button>
+          <button class="btn-outline">Skip to Projects</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ -->
+    <!-- SECTION 2 — Trust Signals (from Option A) -->
+    <!-- ════════════════════════════════════ -->
+    <div class="wf-section">
+      <div class="wf-section-tag">Section 2 &mdash; Trust Signals</div>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-number">4</div>
+          <div class="stat-label">Products Shipped</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">19</div>
+          <div class="stat-label">AI Agents Built</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Web3</div>
+          <div class="stat-label">+ AI + Full Stack</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Solo</div>
+          <div class="stat-label">Founder &amp; Builder</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ -->
+    <!-- SECTION 3 — Process -->
+    <!-- ════════════════════════════════════ -->
+    <div class="wf-section">
+      <div class="wf-section-tag">Section 3 &mdash; Process</div>
+      <div class="section-heading">
+        <span class="overline">How I Work</span>
+        <h3>From Idea to Production</h3>
+        <p>Every engagement follows a clear, no-BS process. This is how four products got shipped.</p>
+      </div>
+      <div class="process-steps">
+        <div class="process-step">
+          <span class="step-num">01</span>
+          <h4>Discover</h4>
+          <p>Understand the problem, the business, and what "done" looks like. My AI Executive Assistant runs the initial brief.</p>
+        </div>
+        <div class="process-step">
+          <span class="step-num">02</span>
+          <h4>Architect</h4>
+          <p>Design the system. Pick the right stack. Plan for scale. Cost-optimize with AI cascades and smart infra choices.</p>
+        </div>
+        <div class="process-step">
+          <span class="step-num">03</span>
+          <h4>Build</h4>
+          <p>Ship fast with AI-assisted development. 19 specialized agents handle everything from code to deployment.</p>
+        </div>
+        <div class="process-step">
+          <span class="step-num">04</span>
+          <h4>Deliver</h4>
+          <p>Production-ready, security-hardened, documented. Deployed on Vercel, Railway, or Cloudflare &mdash; your choice.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ -->
+    <!-- SECTION 4 — Proof (Real Projects) -->
+    <!-- ════════════════════════════════════ -->
+    <div class="wf-section">
+      <div class="wf-section-tag">Section 4 &mdash; Proof</div>
+      <div class="section-heading">
+        <span class="overline">Proof</span>
+        <h3>Here's What That Looks Like</h3>
+      </div>
+
+      <div class="wf-grid-2" style="margin-top: 24px;">
+        <!-- Murmura Studio -->
+        <div class="wf-card" style="padding: 0; overflow: hidden;">
+          <div style="height: 180px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 11px; letter-spacing: 1px;">MURMURA STUDIO SCREENSHOT</div>
+          <div style="padding: 28px;">
+            <div class="card-tag">AI Video Production</div>
+            <h4>Murmura Studio</h4>
+            <p style="margin-top: 8px;">AI-powered video production platform for YouTube creators. Automates the full content pipeline &mdash; research, scripting, voiceover, rendering, and publishing. Built with Next.js 16, Vercel AI SDK, Anthropic, ElevenLabs, and Remotion.</p>
+            <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Next.js 16</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">AI SDK</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Anthropic</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Remotion</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">ElevenLabs</span>
+            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: var(--accent);">Read the full story &rarr;</div>
+          </div>
+        </div>
+
+        <!-- Decoded Daily News -->
+        <div class="wf-card" style="padding: 0; overflow: hidden;">
+          <div style="height: 180px; background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 11px; letter-spacing: 1px;">DDN SCREENSHOT</div>
+          <div style="padding: 28px;">
+            <div class="card-tag">AI News Platform</div>
+            <h4>Decoded Daily News</h4>
+            <p style="margin-top: 8px;">AI-personalized daily news digest for professionals. Fetches from 40+ sources, uses multi-step AI summarization, and delivers role-personalized digests via email and web at 6 AM daily. Cost-optimized with a Gemini &rarr; Vertex AI &rarr; Groq &rarr; Claude cascade.</p>
+            <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Python</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">FastAPI</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Supabase</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Multi-LLM</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">SendGrid</span>
+            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: var(--accent);">Read the full story &rarr;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-grid-2" style="margin-top: 20px;">
+        <!-- Provly -->
+        <div class="wf-card" style="padding: 0; overflow: hidden;">
+          <div style="height: 180px; background: linear-gradient(135deg, #1a2e1a 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 11px; letter-spacing: 1px;">PROVLY SCREENSHOT</div>
+          <div style="padding: 28px;">
+            <div class="card-tag">Web3 Campaign Platform</div>
+            <h4>Provly</h4>
+            <p style="margin-top: 8px;">On-chain campaign verification on Base. Brands create campaigns, creators submit proof of social content, rewards distributed via smart contracts with ECDSA verification. Type-safe end-to-end with tRPC and wallet-native auth via SIWE.</p>
+            <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Next.js 14</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Solidity</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Base</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">tRPC</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Wagmi</span>
+            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: var(--accent);">Read the full story &rarr;</div>
+          </div>
+        </div>
+
+        <!-- HADP -->
+        <div class="wf-card" style="padding: 0; overflow: hidden;">
+          <div style="height: 180px; background: linear-gradient(135deg, #2e1a1a 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 11px; letter-spacing: 1px;">HADP ARCHITECTURE DIAGRAM</div>
+          <div style="padding: 28px;">
+            <div class="card-tag">AI Agency Orchestration</div>
+            <h4>Hybrid AI Dev Pipeline</h4>
+            <p style="margin-top: 8px;">Self-hosted AI-powered software development agency. 19 specialized agents across 3 teams, orchestrated via Slack, n8n, and Claude &mdash; managed by a non-technical CEO. Hybrid cloud with Mac + PC GPU for local inference.</p>
+            <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">n8n</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Claude</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Ollama</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">Slack</span>
+              <span style="font-size: 10px; padding: 3px 8px; border-radius: 100px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border-subtle);">19 Agents</span>
+            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: var(--accent);">Read the full story &rarr;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ -->
+    <!-- SECTION 5 — The Person -->
+    <!-- ════════════════════════════════════ -->
+    <div class="wf-section">
+      <div class="wf-section-tag">Section 5 &mdash; The Person</div>
+      <div class="about-split">
+        <div class="about-photo">PHOTO</div>
+        <div class="about-text">
+          <h4>The short version</h4>
+          <p>Full-Stack Builder and AI-First Founder based in Metro Manila. I spent years in events, marketing, and partnerships &mdash; at The BLOKC, Hiraya Network, Superteam Philippines &mdash; before going all-in on building software with AI.</p>
+          <p style="color: var(--text-muted);">I don't come from a traditional CS background. I come from business &mdash; BBA from PUP, years running events and marketing in Web3. That's why I build products that make business sense, not science projects.</p>
+          <div class="skills-grid" style="margin-top: 16px;">
+            <span class="skill-pill highlight">AI / LLMs</span>
+            <span class="skill-pill highlight">Next.js</span>
+            <span class="skill-pill highlight">Web3</span>
+            <span class="skill-pill">React</span>
+            <span class="skill-pill">TypeScript</span>
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">Solidity</span>
+            <span class="skill-pill">Vercel AI SDK</span>
+            <span class="skill-pill">Anthropic</span>
+            <span class="skill-pill">Supabase</span>
+            <span class="skill-pill">PostgreSQL</span>
+            <span class="skill-pill">Tailwind CSS</span>
+            <span class="skill-pill">tRPC</span>
+            <span class="skill-pill">n8n</span>
+            <span class="skill-pill">Vercel</span>
+            <span class="skill-pill">Railway</span>
+            <span class="skill-pill">Cloudflare</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ -->
+    <!-- SECTION 6 — CTA (AI Executive Assistant) -->
+    <!-- ════════════════════════════════════ -->
+    <div class="wf-section cta-section">
+      <div class="wf-section-tag">Section 6 &mdash; CTA</div>
+      <h3>Let's make something real.</h3>
+      <p>Got 5 minutes? Leave your details below and my AI Executive Assistant will call you for a quick brief about your project &mdash; then we'll set up a meeting.</p>
+
+      <div class="cta-form">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="e.g. Maria Santos">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>WhatsApp Number</label>
+            <input type="tel" placeholder="+63 917 000 0000">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="maria@company.com">
+          </div>
+        </div>
+        <div class="form-note">
+          <div class="note-icon">&#9993;</div>
+          <p>After you submit, my <strong>AI Executive Assistant</strong> will reach out within minutes for a short 5-minute call to understand your project. No sales pitch &mdash; just a quick brief so I can prepare for our meeting.</p>
+        </div>
+        <button class="cta-submit">Get a Call from My AI Assistant</button>
+        <div class="cta-timeline">
+          <div class="step">
+            <div class="step-dot"></div>
+            <span>You submit</span>
+          </div>
+          <span class="step-arrow">&rarr;</span>
+          <div class="step">
+            <div class="step-dot"></div>
+            <span>AI Assistant calls</span>
+          </div>
+          <span class="step-arrow">&rarr;</span>
+          <div class="step">
+            <div class="step-dot"></div>
+            <span>5-min project brief</span>
+          </div>
+          <span class="step-arrow">&rarr;</span>
+          <div class="step">
+            <div class="step-dot"></div>
+            <span>Meeting with Jay</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="wf-footer">
+      <span>&copy; 2026 Jay Consejo</span>
+      <div class="social">
+        <span>LinkedIn</span>
+        <span>GitHub</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION-BY-SECTION SPECS -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="specs">
+    <div class="section-label">Section Specifications</div>
+    <div class="specs-grid">
+      <div class="spec-card">
+        <span class="spec-num">Section 1</span>
+        <h4>Narrative Hero</h4>
+        <p>"Hey, I'm Jay" opening builds instant rapport. Left-aligned for conversational feel. Subtext pulls directly from portfolio intro &mdash; specific, not generic.</p>
+        <div class="spec-tokens">
+          <span>padding: 80px 48px</span>
+          <span>max-width: 800px</span>
+          <span>font: Playfair 52px</span>
+        </div>
+      </div>
+      <div class="spec-card">
+        <span class="spec-num">Section 2</span>
+        <h4>Trust Signals</h4>
+        <p>Borrowed from Option A. Four metrics that matter: products shipped, agents built, skill domains, solo founder status. Scannable credibility.</p>
+        <div class="spec-tokens">
+          <span>grid: 4-col</span>
+          <span>stat: Playfair 36px</span>
+          <span>color: accent</span>
+        </div>
+      </div>
+      <div class="spec-card">
+        <span class="spec-num">Section 3</span>
+        <h4>Process</h4>
+        <p>Four-step flow: Discover, Architect, Build, Deliver. Step 1 references the AI Executive Assistant &mdash; ties the CTA into the narrative early. Step 3 highlights the 19-agent pipeline.</p>
+        <div class="spec-tokens">
+          <span>grid: 4-col</span>
+          <span>step-num: 40px dim</span>
+        </div>
+      </div>
+      <div class="spec-card">
+        <span class="spec-num">Section 4</span>
+        <h4>Proof &mdash; Real Projects</h4>
+        <p>All four products from the portfolio: Murmura Studio, DDN, Provly, HADP. Case-study format with real descriptions. Tech tags pulled from actual stack.</p>
+        <div class="spec-tokens">
+          <span>grid: 2-col</span>
+          <span>card: 16px radius</span>
+          <span>thumb: 180px</span>
+        </div>
+      </div>
+      <div class="spec-card">
+        <span class="spec-num">Section 5</span>
+        <h4>The Person</h4>
+        <p>Photo + bio. Highlights the business-first background (events, marketing, partnerships) as a differentiator. Skills pills borrowed from Option B &mdash; 17 real technologies.</p>
+        <div class="spec-tokens">
+          <span>grid: 280px + 1fr</span>
+          <span>photo: 280x340</span>
+        </div>
+      </div>
+      <div class="spec-card">
+        <span class="spec-num">Section 6</span>
+        <h4>CTA &mdash; AI Assistant Brief</h4>
+        <p>Three fields: Name, WhatsApp, Email. Explainer note about the AI Executive Assistant calling for a 5-min brief. Visual timeline: Submit &rarr; AI calls &rarr; Brief &rarr; Meeting with Jay.</p>
+        <div class="spec-tokens">
+          <span>form: 480px max</span>
+          <span>input: 12px radius</span>
+          <span>submit: full-width</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
