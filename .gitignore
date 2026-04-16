@@ -39,3 +39,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local session tracking + process docs (never committed — not needed to run the site)
+/journal
+/standups
+/PROGRESS.md
+/DECISIONS.md
+/JOURNAL.md
+
+# local tooling state (not needed to run the site)
+/.claude
+/.alex-sync
+
+# local-only backup of untracked-but-kept files (never committed)
+/local-backup
+
+# non-runtime docs & AI instructions (kept local, not pushed)
+/CLAUDE.md
+/AGENTS.md
+/README.md
+/docs
+/design-proposals
+/pipeline-responses
