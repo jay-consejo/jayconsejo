@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -65,12 +66,12 @@ export default function PrivacyPage() {
             <p className="mt-2">
               For questions about this privacy policy or your data, please reach
               out through our{" "}
-              <a
+              <Link
                 href="/#contact"
                 className="font-medium text-foreground underline underline-offset-4"
               >
                 contact form
-              </a>
+              </Link>
               .
             </p>
           </section>

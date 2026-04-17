@@ -61,3 +61,6 @@ next-env.d.ts
 /docs
 /design-proposals
 /pipeline-responses
+
+# local QA tooling (not needed to run the site)
+/shoot.mjs
