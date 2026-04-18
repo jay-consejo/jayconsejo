@@ -96,6 +96,47 @@
   --sidebar-ring: #C8A87E;
 }
 
+/* Warm Light palette — opt-in via next-themes toggle. Dark stays default. */
+:root.light {
+  --background: #FAF6F0;
+  --foreground: #1A1615;
+  --surface: #F2ECE3;
+  --text-secondary: #6B625A;
+  --accent-gold: #A8886A;
+  --accent-light: #C8A87E;
+  --accent-dim: rgba(168, 136, 106, 0.14);
+  --border-subtle: #E8DFD3;
+  --card: #F5F0E8;
+  --card-foreground: #1A1615;
+  --popover: #F5F0E8;
+  --popover-foreground: #1A1615;
+  --primary: #A8886A;
+  --primary-foreground: #FAF6F0;
+  --secondary: #F2ECE3;
+  --secondary-foreground: #1A1615;
+  --muted: #F5F0E8;
+  --muted-foreground: #8B7F73;
+  --accent: #F2ECE3;
+  --accent-foreground: #A8886A;
+  --destructive: #B84A3D;
+  --border: #DFD5C7;
+  --input: #DFD5C7;
+  --ring: #A8886A;
+  --chart-1: #A8886A;
+  --chart-2: #C8A87E;
+  --chart-3: #6B625A;
+  --chart-4: #8B7F73;
+  --chart-5: #DFD5C7;
+  --sidebar: #F5F0E8;
+  --sidebar-foreground: #1A1615;
+  --sidebar-primary: #A8886A;
+  --sidebar-primary-foreground: #FAF6F0;
+  --sidebar-accent: #F2ECE3;
+  --sidebar-accent-foreground: #1A1615;
+  --sidebar-border: #DFD5C7;
+  --sidebar-ring: #A8886A;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

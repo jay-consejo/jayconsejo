@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
@@ -30,6 +31,9 @@ export function Nav() {
               </a>
             </li>
           ))}
+          <li>
+            <ThemeToggle />
+          </li>
           <li>
             <a
               href={siteConfig.ctaHref}
@@ -79,6 +83,14 @@ export function Nav() {
               >
                 {siteConfig.ctaLabel}
               </a>
+            </li>
+            <li className="pt-4 border-t border-border-subtle/60">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-text-secondary">
+                  Theme
+                </span>
+                <ThemeToggle />
+              </div>
             </li>
           </ul>
         </div>
