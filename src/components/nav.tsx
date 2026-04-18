@@ -42,9 +42,12 @@ export function Nav() {
 
         {/* Mobile toggle */}
         <button
+          type="button"
           onClick={() => setOpen(!open)}
-          className="text-foreground md:hidden"
+          className="-mr-3 inline-flex size-11 items-center justify-center text-foreground md:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
@@ -52,7 +55,10 @@ export function Nav() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-border-subtle/60 bg-background px-6 py-6 md:hidden">
+        <div
+          id="mobile-menu"
+          className="border-t border-border-subtle/60 bg-background px-6 py-6 md:hidden"
+        >
           <ul className="flex flex-col gap-5">
             {siteConfig.nav.map((item) => (
               <li key={item.href}>
