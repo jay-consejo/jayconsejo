@@ -1,50 +1,38 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Script from "next/script";
 import { Mail } from "lucide-react";
 
 const timelineSteps = [
   "You submit",
-  "AI Assistant calls",
+  "Talk to Sofia",
   "5-min project brief",
   "Meeting with Jay",
 ];
 
-type Status = "idle" | "loading" | "success" | "error";
+type Status = "idle" | "talking";
+type Lead = { name: string; whatsapp: string; email: string };
 
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [lead, setLead] = useState<Lead | null>(null);
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("loading");
-    setErrorMessage("");
-
     const formData = new FormData(e.currentTarget);
-    const payload = {
-      name: String(formData.get("name") ?? ""),
-      whatsapp: String(formData.get("whatsapp") ?? ""),
-      email: String(formData.get("email") ?? ""),
-    };
+    setLead({
+      name: String(formData.get("name") ?? "").trim(),
+      whatsapp: String(formData.get("whatsapp") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim(),
+    });
+    setStatus("talking");
+  }
 
-    try {
-      const res = await fetch("/api/sofia", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data: { ok: boolean; error?: string } = await res.json();
-      if (!data.ok) {
-        setErrorMessage(data.error ?? "Something went wrong. Please try again.");
-        setStatus("error");
-        return;
-      }
-      setStatus("success");
-    } catch {
-      setErrorMessage("Network error. Please try again.");
-      setStatus("error");
-    }
+  function resetToForm() {
+    setStatus("idle");
+    setLead(null);
   }
 
   return (
@@ -52,6 +40,10 @@ export function Contact() {
       id="contact"
       className="relative overflow-hidden px-6 py-24 md:py-32"
     >
+      <Script
+        src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+        strategy="afterInteractive"
+      />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -69,18 +61,39 @@ export function Contact() {
             Let&apos;s make something real.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-text-secondary">
-            Got 5 minutes? My AI Assistant will call for a quick brief. Then we meet.
+            Got 5 minutes? Talk to my AI Assistant right here for a quick brief.
           </p>
         </div>
 
         <div className="mt-12 rounded-2xl border border-border-subtle/80 bg-card/60 p-8 md:p-10">
-          {status === "success" ? (
+          {status === "talking" && lead && agentId ? (
+            <div className="space-y-5">
+              <elevenlabs-convai
+                agent-id={agentId}
+                dynamic-variables={JSON.stringify(lead)}
+              />
+              <button
+                type="button"
+                onClick={resetToForm}
+                className="text-xs font-medium tracking-[0.12em] text-text-secondary uppercase transition-colors hover:text-accent-gold"
+              >
+                ← Start over
+              </button>
+            </div>
+          ) : status === "talking" && !agentId ? (
             <div className="py-6 text-center">
               <p className="font-display text-2xl font-semibold text-accent-gold">
-                Thank you.
+                Almost there.
               </p>
               <p className="mt-3 text-text-secondary">
-                My AI Executive Assistant calls within minutes. Keep your phone close.
+                The widget isn&apos;t configured yet — email{" "}
+                <a
+                  href="mailto:jay@jayconsejo.com"
+                  className="text-accent-gold underline underline-offset-4 hover:text-accent-light"
+                >
+                  jay@jayconsejo.com
+                </a>{" "}
+                directly and I&apos;ll reply within the day.
               </p>
             </div>
           ) : (
@@ -97,9 +110,8 @@ export function Contact() {
                   name="name"
                   type="text"
                   required
-                  disabled={status === "loading"}
                   placeholder="e.g. Maria Santos"
-                  className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30 disabled:opacity-60"
+                  className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30"
                 />
               </div>
               <div className="grid gap-5 md:grid-cols-2">
@@ -115,9 +127,8 @@ export function Contact() {
                     name="whatsapp"
                     type="tel"
                     required
-                    disabled={status === "loading"}
                     placeholder="+63 917 000 0000"
-                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30 disabled:opacity-60"
+                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30"
                   />
                 </div>
                 <div>
@@ -132,9 +143,8 @@ export function Contact() {
                     name="email"
                     type="email"
                     required
-                    disabled={status === "loading"}
                     placeholder="maria@company.com"
-                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30 disabled:opacity-60"
+                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30"
                   />
                 </div>
               </div>
@@ -144,27 +154,15 @@ export function Contact() {
                 <p className="text-sm leading-relaxed text-text-secondary">
                   Submit, and my{" "}
                   <strong className="text-foreground">AI Executive Assistant</strong>{" "}
-                  calls within minutes. A 5-minute brief — no pitch — so I walk in ready.
+                  will pick up right here in your browser. A 5-minute brief — no pitch — so I walk in ready.
                 </p>
               </div>
 
-              {status === "error" && errorMessage && (
-                <p
-                  role="alert"
-                  className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
-                >
-                  {errorMessage}
-                </p>
-              )}
-
               <button
                 type="submit"
-                disabled={status === "loading"}
-                className="inline-flex h-12 w-full items-center justify-center rounded-full bg-accent-gold px-6 text-sm font-semibold text-primary-foreground transition-all hover:bg-accent-light hover:shadow-[0_0_32px_var(--accent-dim)] disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-12 w-full items-center justify-center rounded-full bg-accent-gold px-6 text-sm font-semibold text-primary-foreground transition-all hover:bg-accent-light hover:shadow-[0_0_32px_var(--accent-dim)]"
               >
-                {status === "loading"
-                  ? "Sending…"
-                  : "Get a Call from My AI Assistant"}
+                Talk to My AI Assistant
               </button>
             </form>
           )}
