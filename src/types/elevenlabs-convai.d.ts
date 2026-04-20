@@ -5,8 +5,14 @@ declare module "react" {
     interface IntrinsicElements {
       "elevenlabs-convai": DetailedHTMLProps<
         HTMLAttributes<HTMLElement> & {
-          "agent-id": string;
+          "agent-id"?: string;
+          "signed-url"?: string;
           "dynamic-variables"?: string;
+          variant?: string;
+          placement?: string;
+          "default-expanded"?: string;
+          "always-expanded"?: string;
+          "override-config"?: string;
         },
         HTMLElement
       >;

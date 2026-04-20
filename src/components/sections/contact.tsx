@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Script from "next/script";
 import { Mail } from "lucide-react";
 import parsePhoneNumberFromString from "libphonenumber-js";
@@ -12,11 +12,18 @@ const timelineSteps = [
   "Meeting with Jay",
 ];
 
-type Status = "idle" | "talking";
+type Status = "idle" | "signing" | "talking" | "error";
 type Lead = { name: string; whatsapp: string; email: string };
 type FieldErrors = Partial<Record<keyof Lead, string>>;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const DISCONNECT_EVENTS = [
+  "elevenlabs-convai:call-ended",
+  "elevenlabs-convai:disconnect",
+  "call-ended",
+  "disconnect",
+] as const;
 
 type ValidationResult =
   | { ok: true; lead: Lead }
@@ -48,10 +55,12 @@ function validateLead(formData: FormData): ValidationResult {
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [lead, setLead] = useState<Lead | null>(null);
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+  const widgetContainerRef = useRef<HTMLDivElement | null>(null);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const result = validateLead(new FormData(e.currentTarget));
     if (!result.ok) {
@@ -60,14 +69,86 @@ export function Contact() {
     }
     setErrors({});
     setLead(result.lead);
-    setStatus("talking");
+    setErrorMsg(null);
+    setStatus("signing");
+
+    try {
+      const res = await fetch("/api/sofia/sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result.lead),
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        setErrorMsg(
+          res.status === 429
+            ? "Too many attempts — please wait a few minutes."
+            : res.status === 400
+              ? body.error || "Please check your info."
+              : "Couldn't start the call. Please try again.",
+        );
+        setStatus("error");
+        return;
+      }
+      const data = (await res.json()) as { signedUrl?: string };
+      if (!data.signedUrl) {
+        setErrorMsg("Couldn't start the call. Please try again.");
+        setStatus("error");
+        return;
+      }
+      setSignedUrl(data.signedUrl);
+      setStatus("talking");
+    } catch {
+      setErrorMsg("Network issue. Please try again.");
+      setStatus("error");
+    }
   }
 
   function resetToForm() {
     setStatus("idle");
-    setLead(null);
+    setSignedUrl(null);
+    setErrorMsg(null);
     setErrors({});
   }
+
+  useEffect(() => {
+    if (status !== "talking") return;
+    const container = widgetContainerRef.current;
+    if (!container) return;
+
+    let cleanupFns: Array<() => void> = [];
+
+    const attachListeners = () => {
+      const widget = container.querySelector("elevenlabs-convai");
+      if (!widget) return false;
+      const onEnd = (e: Event) => {
+        console.log(`[sofia] widget disconnect event: ${e.type}`);
+        resetToForm();
+      };
+      DISCONNECT_EVENTS.forEach((name) => {
+        widget.addEventListener(name, onEnd as EventListener);
+        cleanupFns.push(() =>
+          widget.removeEventListener(name, onEnd as EventListener),
+        );
+      });
+      return true;
+    };
+
+    if (!attachListeners()) {
+      const obs = new MutationObserver(() => {
+        if (attachListeners()) obs.disconnect();
+      });
+      obs.observe(container, { childList: true, subtree: true });
+      cleanupFns.push(() => obs.disconnect());
+    }
+
+    return () => {
+      cleanupFns.forEach((fn) => fn());
+      cleanupFns = [];
+    };
+  }, [status, signedUrl]);
 
   return (
     <section
@@ -100,11 +181,13 @@ export function Contact() {
         </div>
 
         <div className="mt-12 rounded-2xl border border-border-subtle/80 bg-card/60 p-8 md:p-10">
-          {status === "talking" && lead && agentId ? (
-            <div className="space-y-5">
+          {status === "talking" && signedUrl && lead ? (
+            <div ref={widgetContainerRef} className="space-y-5">
               <elevenlabs-convai
-                agent-id={agentId}
+                signed-url={signedUrl}
                 dynamic-variables={JSON.stringify(lead)}
+                variant="expanded"
+                default-expanded="true"
               />
               <button
                 type="button"
@@ -114,24 +197,25 @@ export function Contact() {
                 ← Start over
               </button>
             </div>
-          ) : status === "talking" && !agentId ? (
-            <div className="py-6 text-center">
+          ) : status === "signing" ? (
+            <div className="py-10 text-center">
               <p className="font-display text-2xl font-semibold text-accent-gold">
-                Almost there.
+                Preparing your call…
               </p>
               <p className="mt-3 text-text-secondary">
-                The widget isn&apos;t configured yet — email{" "}
-                <a
-                  href="mailto:jay@jayconsejo.com"
-                  className="text-accent-gold underline underline-offset-4 hover:text-accent-light"
-                >
-                  jay@jayconsejo.com
-                </a>{" "}
-                directly and I&apos;ll reply within the day.
+                Sofia&apos;s warming up. One moment.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              {status === "error" && errorMsg && (
+                <div
+                  role="alert"
+                  className="rounded-lg border border-red-500/40 bg-red-500/8 px-4 py-3 text-sm text-red-400"
+                >
+                  {errorMsg}
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="name"
@@ -146,6 +230,7 @@ export function Contact() {
                   required
                   minLength={2}
                   autoComplete="name"
+                  defaultValue={lead?.name ?? ""}
                   aria-invalid={errors.name ? true : undefined}
                   aria-describedby={errors.name ? "name-error" : undefined}
                   placeholder="e.g. Maria Santos"
@@ -172,6 +257,7 @@ export function Contact() {
                     required
                     inputMode="tel"
                     autoComplete="tel"
+                    defaultValue={lead?.whatsapp ?? ""}
                     aria-invalid={errors.whatsapp ? true : undefined}
                     aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined}
                     placeholder="+63 917 555 0123"
@@ -196,6 +282,7 @@ export function Contact() {
                     type="email"
                     required
                     autoComplete="email"
+                    defaultValue={lead?.email ?? ""}
                     aria-invalid={errors.email ? true : undefined}
                     aria-describedby={errors.email ? "email-error" : undefined}
                     placeholder="maria@company.com"
