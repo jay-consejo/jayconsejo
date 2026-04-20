@@ -3,6 +3,7 @@ import { Inter, Playfair_Display, Geist_Mono } from "next/font/google";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { SofiaBubble } from "@/components/sofia-bubble";
+import { SofiaStateProvider } from "@/components/sofia-state";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
@@ -139,10 +140,12 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <Nav />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <SofiaBubble />
+          <SofiaStateProvider>
+            <Nav />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <SofiaBubble />
+          </SofiaStateProvider>
         </ThemeProvider>
       </body>
     </html>

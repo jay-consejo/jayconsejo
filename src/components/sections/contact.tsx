@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Script from "next/script";
-import { Mail } from "lucide-react";
+import { CheckCircle2, Mail } from "lucide-react";
 import parsePhoneNumberFromString from "libphonenumber-js";
+import { useSofiaState } from "@/components/sofia-state";
 
 const timelineSteps = [
   "You submit",
@@ -12,7 +13,6 @@ const timelineSteps = [
   "Meeting with Jay",
 ];
 
-type Status = "idle" | "signing" | "talking" | "error";
 type Lead = { name: string; whatsapp: string; email: string };
 type FieldErrors = Partial<Record<keyof Lead, string>>;
 
@@ -53,10 +53,11 @@ function validateLead(formData: FormData): ValidationResult {
 }
 
 export function Contact() {
-  const [status, setStatus] = useState<Status>("idle");
+  const { status, setStatus } = useSofiaState();
   const [lead, setLead] = useState<Lead | null>(null);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const widgetContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -78,6 +79,19 @@ export function Contact() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(result.lead),
       });
+
+      if (res.status === 409) {
+        const body = (await res.json().catch(() => ({}))) as {
+          message?: string;
+        };
+        setServerMessage(
+          body.message ||
+            "We already have your info — Jay will reach out within 24 hours.",
+        );
+        setStatus("already_contacted");
+        return;
+      }
+
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as {
           error?: string;
@@ -106,11 +120,9 @@ export function Contact() {
     }
   }
 
-  function resetToForm() {
-    setStatus("idle");
+  function endCall() {
     setSignedUrl(null);
-    setErrorMsg(null);
-    setErrors({});
+    setStatus("locked");
   }
 
   useEffect(() => {
@@ -125,7 +137,8 @@ export function Contact() {
       if (!widget) return false;
       const onEnd = (e: Event) => {
         console.log(`[sofia] widget disconnect event: ${e.type}`);
-        resetToForm();
+        setSignedUrl(null);
+        setStatus("locked");
       };
       DISCONNECT_EVENTS.forEach((name) => {
         widget.addEventListener(name, onEnd as EventListener);
@@ -148,7 +161,7 @@ export function Contact() {
       cleanupFns.forEach((fn) => fn());
       cleanupFns = [];
     };
-  }, [status, signedUrl]);
+  }, [status, signedUrl, setStatus]);
 
   return (
     <section
@@ -181,20 +194,38 @@ export function Contact() {
         </div>
 
         <div className="mt-12 rounded-2xl border border-border-subtle/80 bg-card/60 p-8 md:p-10">
-          {status === "talking" && signedUrl && lead ? (
+          {status === "locked" || status === "already_contacted" ? (
+            <div className="space-y-4 py-4 text-center">
+              <CheckCircle2 className="mx-auto size-12 text-accent-gold" aria-hidden />
+              <h3 className="font-display text-2xl font-semibold text-foreground">
+                {status === "locked"
+                  ? `Thanks, ${lead?.name ?? "there"}!`
+                  : "We already have your info"}
+              </h3>
+              <p className="text-text-secondary">
+                {status === "locked"
+                  ? `Jay will reach out within 24 hours. Check your email${lead?.email ? ` (${lead.email})` : ""} for the meeting invite — sender is consejo.jay@gmail.com.`
+                  : (serverMessage ?? "Jay will reach out within 24 hours.")}
+              </p>
+              <p className="text-xs text-text-secondary/70">
+                If something urgent came up, reply to the invite email.
+              </p>
+            </div>
+          ) : status === "talking" && signedUrl && lead ? (
             <div ref={widgetContainerRef} className="space-y-5">
               <elevenlabs-convai
                 signed-url={signedUrl}
                 dynamic-variables={JSON.stringify(lead)}
                 variant="expanded"
                 default-expanded="true"
+                dismissible="false"
               />
               <button
                 type="button"
-                onClick={resetToForm}
+                onClick={endCall}
                 className="text-xs font-medium tracking-[0.12em] text-text-secondary uppercase transition-colors hover:text-accent-gold"
               >
-                ← Start over
+                End call
               </button>
             </div>
           ) : status === "signing" ? (

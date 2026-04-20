@@ -12,6 +12,7 @@ declare module "react" {
           placement?: string;
           "default-expanded"?: string;
           "always-expanded"?: string;
+          dismissible?: string;
           "override-config"?: string;
         },
         HTMLElement

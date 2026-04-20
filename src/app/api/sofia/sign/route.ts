@@ -101,6 +101,48 @@ export async function POST(req: Request) {
     );
   }
 
+  const loggerUrl = process.env.SOFIA_LOGGER_URL;
+  const loggerApiKey = process.env.SOFIA_LOGGER_API_KEY;
+  if (loggerUrl && loggerApiKey) {
+    try {
+      const checkUrl = new URL(loggerUrl);
+      checkUrl.searchParams.set("action", "check_contact");
+      checkUrl.searchParams.set("api_key", loggerApiKey);
+      checkUrl.searchParams.set("email", validation.lead.email);
+      checkUrl.searchParams.set("whatsapp", validation.lead.whatsapp);
+      const checkRes = await fetch(checkUrl.toString(), { redirect: "follow" });
+      if (checkRes.ok) {
+        const checkResult = (await checkRes.json()) as {
+          has_recent_call?: boolean;
+          last_call_duration_sec?: number;
+          matched_on?: "email" | "whatsapp" | null;
+        };
+        if (
+          checkResult.has_recent_call &&
+          (checkResult.last_call_duration_sec ?? 0) >= 30
+        ) {
+          console.log(
+            `[sofia/sign] already_contacted ip=${ip} matched_on=${checkResult.matched_on ?? "?"}`,
+          );
+          return NextResponse.json(
+            {
+              code: "already_contacted",
+              message:
+                "We already have your info — Jay will reach out within 24 hours. Check your email for the invite.",
+            },
+            { status: 409 },
+          );
+        }
+      } else {
+        console.error(
+          `[sofia/sign] check_contact non-200 ${checkRes.status} — failing open`,
+        );
+      }
+    } catch (err) {
+      console.error("[sofia/sign] check_contact threw — failing open", err);
+    }
+  }
+
   const apiKey = process.env.ELEVENLABS_API_KEY;
   const agentId = process.env.ELEVENLABS_AGENT_ID;
   if (!apiKey || !agentId) {

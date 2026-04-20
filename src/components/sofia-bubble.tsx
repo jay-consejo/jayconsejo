@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Mic } from "lucide-react";
+import { useSofiaState } from "@/components/sofia-state";
 
 export function SofiaBubble() {
+  const { status } = useSofiaState();
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
@@ -16,6 +18,10 @@ export function SofiaBubble() {
     observer.observe(contact);
     return () => observer.disconnect();
   }, []);
+
+  if (status === "locked" || status === "already_contacted") {
+    return null;
+  }
 
   function openContact() {
     const contact = document.getElementById("contact");
