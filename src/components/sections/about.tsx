@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const skills = [
   { label: "AI / LLMs", highlight: true },
   { label: "Next.js", highlight: true },
@@ -23,15 +25,15 @@ export function About() {
     <section id="about" className="px-6 py-24 md:py-32">
       <div className="mx-auto max-w-6xl">
         <div className="grid items-start gap-12 md:grid-cols-[280px_1fr] md:gap-16">
-          <div
-            className="mx-auto flex aspect-[280/340] w-full max-w-[280px] items-center justify-center rounded-2xl border border-border-subtle text-xs font-medium tracking-[0.2em] text-muted-foreground/70 md:mx-0"
-            style={{
-              background:
-                "linear-gradient(135deg, #141418 0%, #1a1a20 60%, rgba(200,168,126,0.08) 100%)",
-            }}
-            aria-label="Photo placeholder"
-          >
-            PHOTO
+          <div className="relative mx-auto aspect-[280/340] w-full max-w-[280px] overflow-hidden rounded-2xl border border-border-subtle md:mx-0">
+            <Image
+              src="/assets/portraits/jay-formal.jpg"
+              alt="Jay Consejo"
+              fill
+              sizes="(min-width: 768px) 280px, 100vw"
+              priority
+              className="object-cover"
+            />
           </div>
 
           <div>
@@ -42,7 +44,7 @@ export function About() {
               The short version
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-text-secondary">
-              Full-stack builder and AI-first founder. Years in Web3 events, marketing, and partnerships — The BLOKC, Hiraya, Superteam PH — before going all-in on AI software.
+              Full-stack builder and AI-first founder. Years in Web3 events, marketing, and partnerships — The BLOKC, Hiraya Network, Superteam PH — before going all-in on AI software.
             </p>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
               No CS background. Business route — BBA from PUP, years running marketing in Web3. I build products that make business sense, not science projects.
