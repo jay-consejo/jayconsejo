@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Script from "next/script";
 import { Mail } from "lucide-react";
+import parsePhoneNumberFromString from "libphonenumber-js";
 
 const timelineSteps = [
   "You submit",
@@ -13,26 +14,59 @@ const timelineSteps = [
 
 type Status = "idle" | "talking";
 type Lead = { name: string; whatsapp: string; email: string };
+type FieldErrors = Partial<Record<keyof Lead, string>>;
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type ValidationResult =
+  | { ok: true; lead: Lead }
+  | { ok: false; errors: FieldErrors };
+
+function validateLead(formData: FormData): ValidationResult {
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const whatsappRaw = String(formData.get("whatsapp") ?? "").trim();
+  const errors: FieldErrors = {};
+
+  if (name.length < 2) {
+    errors.name = "Please enter your name (2+ characters).";
+  }
+  if (!EMAIL_REGEX.test(email)) {
+    errors.email = "Please enter a valid email (e.g., you@example.com).";
+  }
+
+  const parsed = parsePhoneNumberFromString(whatsappRaw, "PH");
+  if (!parsed?.isValid()) {
+    errors.whatsapp =
+      "Please enter a valid number with country code (e.g., +63 917 555 0123).";
+  }
+
+  if (Object.keys(errors).length > 0) return { ok: false, errors };
+  return { ok: true, lead: { name, email, whatsapp: parsed!.number } };
+}
 
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [lead, setLead] = useState<Lead | null>(null);
+  const [errors, setErrors] = useState<FieldErrors>({});
   const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    setLead({
-      name: String(formData.get("name") ?? "").trim(),
-      whatsapp: String(formData.get("whatsapp") ?? "").trim(),
-      email: String(formData.get("email") ?? "").trim(),
-    });
+    const result = validateLead(new FormData(e.currentTarget));
+    if (!result.ok) {
+      setErrors(result.errors);
+      return;
+    }
+    setErrors({});
+    setLead(result.lead);
     setStatus("talking");
   }
 
   function resetToForm() {
     setStatus("idle");
     setLead(null);
+    setErrors({});
   }
 
   return (
@@ -110,9 +144,18 @@ export function Contact() {
                   name="name"
                   type="text"
                   required
+                  minLength={2}
+                  autoComplete="name"
+                  aria-invalid={errors.name ? true : undefined}
+                  aria-describedby={errors.name ? "name-error" : undefined}
                   placeholder="e.g. Maria Santos"
-                  className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30"
+                  className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30 aria-[invalid=true]:border-red-500/70 aria-[invalid=true]:focus-visible:ring-red-500/30"
                 />
+                {errors.name && (
+                  <p id="name-error" className="mt-1.5 text-xs text-red-500">
+                    {errors.name}
+                  </p>
+                )}
               </div>
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
@@ -127,9 +170,18 @@ export function Contact() {
                     name="whatsapp"
                     type="tel"
                     required
-                    placeholder="+63 917 000 0000"
-                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    aria-invalid={errors.whatsapp ? true : undefined}
+                    aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined}
+                    placeholder="+63 917 555 0123"
+                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30 aria-[invalid=true]:border-red-500/70 aria-[invalid=true]:focus-visible:ring-red-500/30"
                   />
+                  {errors.whatsapp && (
+                    <p id="whatsapp-error" className="mt-1.5 text-xs text-red-500">
+                      {errors.whatsapp}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -143,9 +195,17 @@ export function Contact() {
                     name="email"
                     type="email"
                     required
+                    autoComplete="email"
+                    aria-invalid={errors.email ? true : undefined}
+                    aria-describedby={errors.email ? "email-error" : undefined}
                     placeholder="maria@company.com"
-                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30"
+                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30 aria-[invalid=true]:border-red-500/70 aria-[invalid=true]:focus-visible:ring-red-500/30"
                   />
+                  {errors.email && (
+                    <p id="email-error" className="mt-1.5 text-xs text-red-500">
+                      {errors.email}
+                    </p>
+                  )}
                 </div>
               </div>
 
