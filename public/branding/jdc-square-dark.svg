@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="glow" cx="78%" cy="22%" r="85%">
+      <stop offset="0%" stop-color="#C8A87E" stop-opacity="0.28"/>
+      <stop offset="55%" stop-color="#C8A87E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="512" height="512" rx="64" ry="64" fill="#0B0B0F"/>
+  <rect x="0" y="0" width="512" height="512" rx="64" ry="64" fill="url(#glow)"/>
+  <rect x="14" y="14" width="484" height="484" rx="52" ry="52"
+        fill="none" stroke="#C8A87E" stroke-opacity="0.35" stroke-width="2"/>
+  <text x="256" y="256"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-family="'Playfair Display', 'Playfair', Georgia, 'Times New Roman', serif"
+        font-size="228"
+        font-weight="600"
+        letter-spacing="-6"
+        fill="#C8A87E">JDC</text>
+</svg>
