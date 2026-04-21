@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import Script from "next/script";
 import { CheckCircle2, Mail } from "lucide-react";
 import parsePhoneNumberFromString from "libphonenumber-js";
+import PhoneInput, { type Country } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import { useSofiaState } from "@/components/sofia-state";
 
 const timelineSteps = [
@@ -29,10 +31,12 @@ type ValidationResult =
   | { ok: true; lead: Lead }
   | { ok: false; errors: FieldErrors };
 
-function validateLead(formData: FormData): ValidationResult {
+function validateLead(
+  formData: FormData,
+  whatsappValue: string,
+): ValidationResult {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
-  const whatsappRaw = String(formData.get("whatsapp") ?? "").trim();
   const errors: FieldErrors = {};
 
   if (name.length < 2) {
@@ -42,28 +46,29 @@ function validateLead(formData: FormData): ValidationResult {
     errors.email = "Please enter a valid email (e.g., you@example.com).";
   }
 
-  const parsed = parsePhoneNumberFromString(whatsappRaw, "PH");
+  const parsed = parsePhoneNumberFromString(whatsappValue);
   if (!parsed?.isValid()) {
     errors.whatsapp =
-      "Please enter a valid number with country code (e.g., +63 917 555 0123).";
+      "Please enter a valid WhatsApp number.";
   }
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
   return { ok: true, lead: { name, email, whatsapp: parsed!.number } };
 }
 
-export function Contact() {
+export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) {
   const { status, setStatus } = useSofiaState();
   const [lead, setLead] = useState<Lead | null>(null);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [whatsapp, setWhatsapp] = useState<string>(lead?.whatsapp ?? "");
   const widgetContainerRef = useRef<HTMLDivElement | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const result = validateLead(new FormData(e.currentTarget));
+    const result = validateLead(new FormData(e.currentTarget), whatsapp);
     if (!result.ok) {
       setErrors(result.errors);
       return;
@@ -281,18 +286,17 @@ export function Contact() {
                   >
                     WhatsApp Number
                   </label>
-                  <input
+                  <PhoneInput
                     id="whatsapp"
-                    name="whatsapp"
-                    type="tel"
-                    required
-                    inputMode="tel"
+                    international
+                    defaultCountry={defaultCountry as Country}
+                    value={whatsapp}
+                    onChange={(v) => setWhatsapp(v ?? "")}
                     autoComplete="tel"
-                    defaultValue={lead?.whatsapp ?? ""}
                     aria-invalid={errors.whatsapp ? true : undefined}
                     aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined}
-                    placeholder="+63 917 555 0123"
-                    className="mt-2 flex h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:border-accent-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/30 aria-[invalid=true]:border-red-500/70 aria-[invalid=true]:focus-visible:ring-red-500/30"
+                    placeholder="917 555 0123"
+                    className={`jc-phone-input mt-2${errors.whatsapp ? " is-invalid" : ""}`}
                   />
                   {errors.whatsapp && (
                     <p id="whatsapp-error" className="mt-1.5 text-xs text-red-500">

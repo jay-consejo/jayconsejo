@@ -194,3 +194,63 @@
   .cycle-item.cycle-4 { display: none; }
   .cycle-sizer { display: none; }
 }
+
+/* react-phone-number-input — theme overrides to match form fields */
+.jc-phone-input.PhoneInput {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  padding-left: 0.75rem;
+  padding-right: 1rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.jc-phone-input.PhoneInput:focus-within {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent-gold) 30%, transparent);
+  outline: none;
+}
+.jc-phone-input.PhoneInput.is-invalid {
+  border-color: color-mix(in oklab, #ef4444 70%, transparent);
+}
+.jc-phone-input.PhoneInput.is-invalid:focus-within {
+  box-shadow: 0 0 0 2px color-mix(in oklab, #ef4444 30%, transparent);
+}
+.jc-phone-input .PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-right: 0.6rem;
+  padding-right: 0.6rem;
+  border-right: 1px solid var(--border);
+  height: 1.75rem;
+}
+.jc-phone-input .PhoneInputCountryIcon {
+  box-shadow: none;
+  background: transparent;
+}
+.jc-phone-input .PhoneInputCountryIcon--border {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 14%, transparent);
+}
+.jc-phone-input .PhoneInputCountrySelectArrow {
+  color: var(--muted-foreground);
+  opacity: 0.9;
+  border-width: 0 1.5px 1.5px 0;
+}
+.jc-phone-input .PhoneInputInput {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  padding: 0;
+}
+.jc-phone-input .PhoneInputInput::placeholder {
+  color: var(--muted-foreground);
+}
