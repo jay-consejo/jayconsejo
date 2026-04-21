@@ -1,0 +1,31 @@
+# Search engines — welcome
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# AI model training crawlers — blocked
+# Remove a block if you want that AI to be able to train on this site.
+# Keep blocks if you'd rather keep your content out of model weights.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
