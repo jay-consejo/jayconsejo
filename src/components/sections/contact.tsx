@@ -6,6 +6,7 @@ import { CheckCircle2, Mail } from "lucide-react";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import PhoneInput, { type Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { CountrySelect } from "@/components/country-select";
 import { useSofiaState } from "@/components/sofia-state";
 
 const timelineSteps = [
@@ -298,6 +299,7 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
                     aria-invalid={errors.whatsapp ? true : undefined}
                     aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined}
                     placeholder="917 555 0123"
+                    countrySelectComponent={CountrySelect}
                     className={`jc-phone-input mt-2${errors.whatsapp ? " is-invalid" : ""}`}
                   />
                   {errors.whatsapp && (
