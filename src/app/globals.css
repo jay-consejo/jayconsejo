@@ -56,6 +56,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --background: #0B0B0F;
   --foreground: #F5F0EB;
   --surface: #1A1A20;
@@ -98,6 +99,7 @@
 
 /* Warm Light palette — opt-in via next-themes toggle. Dark stays default. */
 :root.light {
+  color-scheme: light;
   --background: #FAF6F0;
   --foreground: #1A1615;
   --surface: #F2ECE3;
@@ -224,11 +226,11 @@
 .jc-phone-input .PhoneInputCountry {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-right: 0.6rem;
-  padding-right: 0.6rem;
+  align-self: stretch;
+  gap: 0.4rem;
+  margin-right: 0.75rem;
+  padding-right: 0.75rem;
   border-right: 1px solid var(--border);
-  height: 1.75rem;
 }
 .jc-phone-input .PhoneInputCountryIcon {
   box-shadow: none;
