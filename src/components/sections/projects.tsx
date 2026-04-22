@@ -27,6 +27,7 @@ const projects: Project[] = [
     stack: ["Python", "FastAPI", "Supabase", "Multi-LLM", "SendGrid"],
     gradient: "linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 100%)",
     label: "DECODED DAILY NEWS",
+    video: `${R2}/ddn-ad-final.mp4`,
   },
   {
     tag: "Web3 Campaign Platform",
