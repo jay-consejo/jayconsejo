@@ -1,3 +1,5 @@
+const R2 = "https://pub-f0ac1ec148884b718fc28632174966a4.r2.dev";
+
 type Project = {
   tag: string;
   title: string;
@@ -5,6 +7,7 @@ type Project = {
   stack: string[];
   gradient: string;
   label: string;
+  video?: string;
 };
 
 const projects: Project[] = [
@@ -15,6 +18,7 @@ const projects: Project[] = [
     stack: ["Next.js 16", "AI SDK", "Anthropic", "Remotion", "ElevenLabs"],
     gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
     label: "MURMURA STUDIO",
+    video: `${R2}/murmura-ad-final.mp4`,
   },
   {
     tag: "AI News Platform",
@@ -61,12 +65,26 @@ export function Projects() {
               key={p.title}
               className="group overflow-hidden rounded-2xl border border-border-subtle/80 bg-card/50 transition-all hover:border-accent-gold/40 hover:bg-card"
             >
-              <div
-                className="flex h-48 items-center justify-center text-xs font-medium tracking-[0.2em] text-muted-foreground/70"
-                style={{ background: p.gradient }}
-              >
-                {p.label}
-              </div>
+              {p.video ? (
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label={`${p.title} showreel`}
+                  className="h-48 w-full object-cover"
+                >
+                  <source src={p.video} type="video/mp4" />
+                </video>
+              ) : (
+                <div
+                  className="flex h-48 items-center justify-center text-xs font-medium tracking-[0.2em] text-muted-foreground/70"
+                  style={{ background: p.gradient }}
+                >
+                  {p.label}
+                </div>
+              )}
               <div className="p-7">
                 <div className="inline-flex items-center rounded-full border border-accent-gold/30 bg-accent-dim px-3 py-1 text-[11px] font-medium tracking-[0.08em] text-accent-gold uppercase">
                   {p.tag}
