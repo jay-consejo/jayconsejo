@@ -36,6 +36,7 @@ const projects: Project[] = [
     stack: ["Next.js 14", "Solidity", "Base", "tRPC", "Wagmi"],
     gradient: "linear-gradient(135deg, #1a2e1a 0%, #1a1a2e 100%)",
     label: "PROVLY",
+    video: `${R2}/provly-broadcast-bloom-v4-15s.mp4`,
   },
   {
     tag: "AI Agency Orchestration",
