@@ -75,13 +75,13 @@ export function Projects() {
                   playsInline
                   preload="metadata"
                   aria-label={`${p.title} showreel`}
-                  className="h-48 w-full object-cover md:aspect-video md:h-auto"
+                  className="aspect-video w-full bg-black object-contain"
                 >
                   <source src={p.video} type="video/mp4" />
                 </video>
               ) : (
                 <div
-                  className="flex h-48 items-center justify-center text-xs font-medium tracking-[0.2em] text-muted-foreground/70 md:aspect-video md:h-auto"
+                  className="flex aspect-video w-full items-center justify-center text-xs font-medium tracking-[0.2em] text-muted-foreground/70"
                   style={{ background: p.gradient }}
                 >
                   {p.label}
