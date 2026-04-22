@@ -75,7 +75,7 @@ export function Projects() {
                   playsInline
                   preload="metadata"
                   aria-label={`${p.title} showreel`}
-                  className="aspect-video w-full bg-black object-contain"
+                  className="aspect-video w-full bg-black object-cover"
                 >
                   <source src={p.video} type="video/mp4" />
                 </video>
