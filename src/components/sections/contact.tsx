@@ -175,8 +175,8 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
       className="relative overflow-hidden px-6 py-24 md:py-32"
     >
       <Script
-        src="https://unpkg.com/@elevenlabs/convai-widget-embed@0.11.4/dist/index.js"
-        integrity="sha384-lqdTmRp5HQDf4h52rSsA5zX+3JL9Qgp8RNSg9kz2hjv8M6DfNwt8RAIMLF41d66H"
+        src="https://unpkg.com/@elevenlabs/convai-widget-embed@0.11.7/dist/index.js"
+        integrity="sha384-x7yFJgvQnkRfmQmewthtfovrSJn8TUMndQFtIm/KEsTdZcIUBh5kZwXKZ9RLXJ6y"
         crossOrigin="anonymous"
         strategy="afterInteractive"
       />
