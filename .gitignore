@@ -54,6 +54,7 @@ next-env.d.ts
 
 # local-only backup of untracked-but-kept files (never committed)
 /local-backup
+/deleted-recoverable
 
 # non-runtime docs & AI instructions (kept local, not pushed)
 /CLAUDE.md
@@ -65,3 +66,4 @@ next-env.d.ts
 
 # local QA tooling (not needed to run the site)
 /shoot.mjs
+/render-branding.mjs
