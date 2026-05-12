@@ -54,6 +54,7 @@ next-env.d.ts
 
 # local-only backup of untracked-but-kept files (never committed)
 /local-backup
+/local
 /deleted-recoverable
 
 # non-runtime docs & AI instructions (kept local, not pushed)
