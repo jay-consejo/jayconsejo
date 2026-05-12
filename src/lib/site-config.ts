@@ -4,7 +4,7 @@ export const siteConfig = {
   jobTitle: "AI, Web & Systems Builder",
   title: "Jay Consejo — AI, Web Apps & Systems Builder",
   description:
-    "Jay Consejo — ships AI workflows, web apps & systems in weeks, not quarters. 4 products shipped, 19 agents built. Works globally.",
+    "Jay Consejo — ships AI workflows, web apps & systems in weeks, not quarters. 6 products shipped, 18 agents built. Works globally.",
   url: "https://jayconsejo.com",
   keywords: [
     "ai integration for business",
@@ -28,6 +28,6 @@ export const siteConfig = {
   ctaHref: "#contact",
   social: {
     linkedin: "https://www.linkedin.com/in/jayconsejo/",
-    github: "https://github.com/jayconsejo",
+    github: "https://github.com/jay-consejo",
   },
 } as const;
