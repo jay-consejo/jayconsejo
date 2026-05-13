@@ -39,12 +39,12 @@ const projects: Project[] = [
     video: `${R2}/provly-broadcast-bloom-v4-15s.mp4`,
   },
   {
-    tag: "AI Agency Orchestration",
-    title: "Hybrid AI Dev Pipeline",
-    body: "Self-hosted AI dev agency. 19 agents across 3 teams, orchestrated via Slack + n8n + Claude. Mac/PC hybrid for local inference.",
-    stack: ["n8n", "Claude", "Ollama", "Slack", "19 Agents"],
+    tag: "Autonomous Dev Substrate",
+    title: "ATHENA",
+    body: "Self-hosted multi-agent dev substrate. 18 agents across 3 teams, autonomous planner → coder → reviewer pipeline. Runs as a peer node in the ALEX constellation — takes sprint tickets, opens PRs.",
+    stack: ["Codex GPT-5.5", "DeepSeek", "Claude Opus", "Ollama", "18 Agents"],
     gradient: "linear-gradient(135deg, #2e1a1a 0%, #1a1a2e 100%)",
-    label: "HYBRID AI DEV PIPELINE",
+    label: "ATHENA",
   },
 ];
 

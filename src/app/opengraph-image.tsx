@@ -73,7 +73,7 @@ export default async function OpengraphImage() {
           >
             <span>jayconsejo.com</span>
             <span style={{ color: "#6B6B73" }}>·</span>
-            <span>4 products · 19 agents</span>
+            <span>6 products · 18 agents</span>
           </div>
         </div>
       </div>

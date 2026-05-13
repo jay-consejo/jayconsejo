@@ -12,7 +12,7 @@ const steps = [
   {
     num: "03",
     title: "Build",
-    body: "Ship fast. 19 agents handle code, review, and deploy.",
+    body: "Ship fast. 18 agents handle code, review, and deploy.",
   },
   {
     num: "04",
@@ -36,7 +36,7 @@ export function Process() {
             From Idea to Production
           </h2>
           <p className="mt-5 text-lg text-text-secondary">
-            A clear, no-BS process. How four products shipped.
+            A clear, no-BS process. How six products shipped.
           </p>
         </div>
 
