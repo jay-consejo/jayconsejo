@@ -1,4 +1,5 @@
-type BoxProps = {
+type Stagger = { i?: number };
+type BoxProps = Stagger & {
   x: number;
   y: number;
   w?: number;
@@ -8,9 +9,9 @@ type BoxProps = {
   accent?: boolean;
 };
 
-function Box({ x, y, w = 128, h = 52, label, sub, accent }: BoxProps) {
+function Box({ x, y, w = 128, h = 52, label, sub, accent, i = 0 }: BoxProps) {
   return (
-    <g>
+    <g className="node" style={{ "--i": i } as React.CSSProperties}>
       <rect
         x={x}
         y={y}
@@ -48,9 +49,11 @@ function Box({ x, y, w = 128, h = 52, label, sub, accent }: BoxProps) {
   );
 }
 
-function Arrow({ d }: { d: string }) {
+function Arrow({ d, i = 0 }: Stagger & { d: string }) {
   return (
     <path
+      className="flow"
+      style={{ "--i": i } as React.CSSProperties}
       d={d}
       fill="none"
       stroke="var(--text-secondary)"
@@ -101,24 +104,24 @@ function Frame({ title, children }: { title: string; children: React.ReactNode }
 function PricingDiagram() {
   return (
     <Frame title="Intake to approved price">
-      <Box x={32} y={90} label="Item + photos" sub="staff intake form" />
-      <Arrow d="M160 116 H188" />
-      <Box x={190} y={90} label="Comps gather" sub="comparable listings" />
-      <Arrow d="M318 116 H346" />
-      <Box x={348} y={90} label="Condition read" sub="from photos only" />
-      <Arrow d="M476 116 H504" />
-      <Box x={506} y={90} w={102} label="Pricing" sub="deterministic" accent />
+      <Box x={32} y={90} label="Item + photos" sub="staff intake form" i={0} />
+      <Arrow d="M160 116 H188" i={0} />
+      <Box x={190} y={90} label="Comps gather" sub="comparable listings" i={1} />
+      <Arrow d="M318 116 H346" i={1} />
+      <Box x={348} y={90} label="Condition read" sub="from photos only" i={2} />
+      <Arrow d="M476 116 H504" i={2} />
+      <Box x={506} y={90} w={102} label="Pricing" sub="deterministic" accent i={3} />
 
-      <Arrow d="M557 142 V190 H540" />
-      <Box x={412} y={190} label="Review" sub="comps + photos + price" />
-      <Arrow d="M412 216 H384" />
-      <Box x={254} y={190} label="Approval" sub="separate decision" />
-      <Arrow d="M254 216 H226" />
-      <Box x={96} y={190} label="Export" sub="private fields excluded" accent />
+      <Arrow d="M557 142 V190 H540" i={3} />
+      <Box x={412} y={190} label="Review" sub="comps + photos + price" i={4} />
+      <Arrow d="M412 216 H384" i={4} />
+      <Box x={254} y={190} label="Approval" sub="separate decision" i={5} />
+      <Arrow d="M254 216 H226" i={5} />
+      <Box x={96} y={190} label="Export" sub="private fields excluded" accent i={6} />
 
-      <Box x={32} y={282} w={150} h={44} label="Batch runs" sub="whole intake at once" />
-      <Box x={198} y={282} w={150} h={44} label="Cost dashboard" sub="spend per run" />
-      <Box x={364} y={282} w={150} h={44} label="Match quality" sub="tune categories" />
+      <Box x={32} y={282} w={150} h={44} label="Batch runs" sub="whole intake at once" i={7} />
+      <Box x={198} y={282} w={150} h={44} label="Cost dashboard" sub="spend per run" i={8} />
+      <Box x={364} y={282} w={150} h={44} label="Match quality" sub="tune categories" i={9} />
       <text x={608} y={318} textAnchor="end" fontSize={9.5} fill="var(--muted-foreground)">
         Workers · D1 · R2
       </text>
@@ -129,25 +132,25 @@ function PricingDiagram() {
 function FinanceDiagram() {
   return (
     <Frame title="Order to closed month">
-      <Box x={32} y={70} w={118} h={44} label="Shopify" sub="webhook intake" />
-      <Box x={32} y={126} w={118} h={44} label="Manual entry" sub="DMs · marketplace" />
-      <Arrow d="M150 92 H180 V116" />
-      <Arrow d="M150 148 H180 V124" />
-      <Arrow d="M180 120 H196" />
-      <Box x={198} y={92} w={140} h={56} label="Ops & Admin book" sub="orders · cash · counts" accent />
-      <Arrow d="M338 120 H366" />
-      <Box x={368} y={92} w={140} h={56} label="Remittance & cash" sub="COD · rider · gateway" />
-      <Arrow d="M438 148 V178" />
-      <Box x={368} y={180} w={140} h={56} label="Management view" sub="journal · TB · P&L · cash" accent />
-      <Arrow d="M508 208 H536" />
-      <Box x={538} y={180} w={70} h={56} label="Gates" sub="must pass" />
-      <Arrow d="M573 236 V270 H508" />
-      <Box x={368} y={252} w={140} h={44} label="Monthly rollover" sub="one menu action" />
-      <Arrow d="M368 274 H290 V148" />
+      <Box x={32} y={70} w={118} h={44} label="Shopify" sub="webhook intake" i={0} />
+      <Box x={32} y={126} w={118} h={44} label="Manual entry" sub="DMs · marketplace" i={1} />
+      <Arrow d="M150 92 H180 V116" i={0} />
+      <Arrow d="M150 148 H180 V124" i={1} />
+      <Arrow d="M180 120 H196" i={2} />
+      <Box x={198} y={92} w={140} h={56} label="Ops & Admin book" sub="orders · cash · counts" accent i={2} />
+      <Arrow d="M338 120 H366" i={3} />
+      <Box x={368} y={92} w={140} h={56} label="Remittance & cash" sub="COD · rider · gateway" i={3} />
+      <Arrow d="M438 148 V178" i={4} />
+      <Box x={368} y={180} w={140} h={56} label="Management view" sub="journal · TB · P&L · cash" accent i={4} />
+      <Arrow d="M508 208 H536" i={5} />
+      <Box x={538} y={180} w={70} h={56} label="Gates" sub="must pass" i={5} />
+      <Arrow d="M573 236 V270 H508" i={6} />
+      <Box x={368} y={252} w={140} h={44} label="Monthly rollover" sub="one menu action" i={6} />
+      <Arrow d="M368 274 H290 V148" i={7} />
       <text x={200} y={286} fontSize={9.5} fill="var(--muted-foreground)">
         carry open orders → next month
       </text>
-      <Box x={32} y={252} w={150} h={44} label="Close report" sub="balance-checked PDF" />
+      <Box x={32} y={252} w={150} h={44} label="Close report" sub="balance-checked PDF" i={7} />
       <text x={608} y={318} textAnchor="end" fontSize={9.5} fill="var(--muted-foreground)">
         Sheets · Apps Script · Python gates
       </text>

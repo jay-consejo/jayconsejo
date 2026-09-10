@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { CaseDiagram } from "@/components/work/case-diagram";
-import { STATUS_LABEL, formatSpan, getCase, publishedWork } from "@/lib/work";
+import { CaseRail } from "@/components/work/case-rail";
+import { ScrollEffects } from "@/components/work/scroll-effects";
+import { STATUS_LABEL, formatSpan, getCase, publishedWork, toId } from "@/lib/work";
 import { siteConfig } from "@/lib/site-config";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -29,6 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+const h2 = "font-display text-2xl font-semibold text-foreground sm:text-3xl";
+
 export default async function CasePage({ params }: Props) {
   const { slug } = await params;
   const item = getCase(slug);
@@ -46,11 +50,21 @@ export default async function CasePage({ params }: Props) {
   };
 
   return (
-    <article className="px-6 pt-32 pb-24 md:pb-32">
+    <article className="relative px-6 pt-32 pb-24 md:pb-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
+      <ScrollEffects />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[70vh]"
+        style={{
+          background:
+            "radial-gradient(circle at 20% 0%, rgba(200, 168, 126, 0.14) 0%, transparent 50%)",
+        }}
+      />
+
       <div className="mx-auto max-w-6xl">
         <Link
           href="/work"
@@ -93,7 +107,7 @@ export default async function CasePage({ params }: Props) {
         </header>
 
         {item.media.kind === "svg" && (
-          <figure className="mt-12 overflow-x-auto rounded-2xl border border-border-subtle/80">
+          <figure className="case-figure mt-12 overflow-x-auto rounded-2xl border border-border-subtle/80">
             {/* Below sm the diagram keeps a readable width and scrolls sideways. */}
             <div className="min-w-[600px] sm:min-w-0">
               <CaseDiagram id={item.media.diagram} />
@@ -101,94 +115,97 @@ export default async function CasePage({ params }: Props) {
           </figure>
         )}
 
-        {item.summary && (
-          <p className="mt-12 max-w-3xl font-display text-xl leading-relaxed text-foreground sm:text-2xl">
-            {item.summary}
-          </p>
-        )}
+        <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-24">
+          <div>
+            {item.summary && (
+              <p
+                data-reveal
+                className="max-w-3xl font-display text-xl leading-relaxed text-foreground sm:text-2xl"
+              >
+                {item.summary}
+              </p>
+            )}
 
-        <div className="mt-12 max-w-3xl space-y-12">
-          {item.sections?.map((s) => (
-            <section key={s.heading}>
-              <h2 className="font-display text-2xl font-semibold text-foreground sm:text-3xl">
-                {s.heading}
-              </h2>
-              <div className="mt-4 space-y-4">
-                {s.body.map((p, i) => (
-                  <p key={i} className="text-base leading-relaxed text-text-secondary">
-                    {p}
-                  </p>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {item.outcomes && (
-          <section className="mt-16">
-            <h2 className="font-display text-2xl font-semibold text-foreground sm:text-3xl">
-              Engineering outcomes
-            </h2>
-            <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-              {item.outcomes.map((o) => (
-                <div
-                  key={o.label}
-                  className="rounded-2xl border border-border-subtle/80 bg-card/50 p-6 text-center"
-                >
-                  <div className="font-display text-3xl font-semibold text-accent-gold md:text-4xl">
-                    {o.value}
+            <div className="mt-12 max-w-3xl space-y-12">
+              {item.sections?.map((s) => (
+                <section key={s.heading} id={toId(s.heading)} data-reveal className="scroll-mt-32">
+                  <h2 className={h2}>{s.heading}</h2>
+                  <div className="mt-4 space-y-4">
+                    {s.body.map((p, i) => (
+                      <p key={i} className="text-base leading-relaxed text-text-secondary">
+                        {p}
+                      </p>
+                    ))}
                   </div>
-                  <div className="mt-2 text-xs font-medium tracking-[0.12em] text-text-secondary uppercase">
-                    {o.label}
-                  </div>
-                </div>
+                </section>
               ))}
             </div>
-          </section>
-        )}
 
-        {item.notes && (
-          <section className="mt-16">
-            <h2 className="font-display text-2xl font-semibold text-foreground sm:text-3xl">
-              Decision notes
-            </h2>
-            <div className="mt-6 grid gap-5 md:grid-cols-3">
-              {item.notes.map((n) => (
-                <div
-                  key={n.title}
-                  className="rounded-2xl border border-border-subtle/80 bg-card/50 p-6"
-                >
-                  <h3 className="font-display text-lg font-semibold text-foreground">
-                    {n.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-text-secondary">{n.body}</p>
+            {item.outcomes && (
+              <section id={toId("Engineering outcomes")} className="mt-16 scroll-mt-32">
+                <h2 data-reveal className={h2}>
+                  Engineering outcomes
+                </h2>
+                <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-2">
+                  {item.outcomes.map((o, i) => (
+                    <div
+                      key={o.label}
+                      data-reveal
+                      style={{ "--i": i } as React.CSSProperties}
+                      className="rounded-2xl border border-border-subtle/80 bg-card/50 p-6 text-center"
+                    >
+                      <div className="font-display text-3xl font-semibold text-accent-gold md:text-4xl">
+                        {o.value}
+                      </div>
+                      <div className="mt-2 text-xs font-medium tracking-[0.12em] text-text-secondary uppercase">
+                        {o.label}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+              </section>
+            )}
 
-        <div className="mt-20 rounded-2xl border border-accent-gold/30 bg-accent-dim/60 p-8 text-center md:p-12">
-          <h2 className="font-display text-2xl font-semibold text-foreground sm:text-3xl">
-            Need something like this?
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-text-secondary">
-            Book a short call. My assistant Sofia takes the first one.
-          </p>
-          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/#contact"
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent-gold px-7 py-3 text-base font-semibold text-primary-foreground transition-all hover:bg-accent-light hover:shadow-[0_0_32px_var(--accent-dim)]"
-            >
-              Book a Call
-            </Link>
-            <Link
-              href="/work"
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-accent-gold/40 px-7 py-3 text-base font-semibold text-accent-gold transition-all hover:border-accent-gold hover:bg-accent-dim"
-            >
-              Back to Work
-            </Link>
+            {item.notes && (
+              <section id={toId("Decision notes")} className="mt-16 scroll-mt-32">
+                <h2 data-reveal className={h2}>
+                  Decision notes
+                </h2>
+                <div className="mt-6 grid gap-5 md:grid-cols-3">
+                  {item.notes.map((n, i) => (
+                    <div
+                      key={n.title}
+                      data-reveal
+                      style={{ "--i": i } as React.CSSProperties}
+                      className="rounded-2xl border border-border-subtle/80 bg-card/50 p-6"
+                    >
+                      <h3 className="font-display text-lg font-semibold text-foreground">
+                        {n.title}
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-text-secondary">{n.body}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <div className="mt-16 flex flex-col items-start gap-3 sm:flex-row">
+              <Link
+                href="/#contact"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent-gold px-7 py-3 text-base font-semibold text-primary-foreground transition-all hover:bg-accent-light hover:shadow-[0_0_32px_var(--accent-dim)]"
+              >
+                Book a Call
+              </Link>
+              <Link
+                href="/work"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-accent-gold/40 px-7 py-3 text-base font-semibold text-accent-gold transition-all hover:border-accent-gold hover:bg-accent-dim"
+              >
+                Back to Work
+              </Link>
+            </div>
           </div>
+
+          <CaseRail item={item} />
         </div>
       </div>
     </article>

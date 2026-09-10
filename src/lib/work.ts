@@ -18,6 +18,8 @@ export type CaseStudy = {
   consent?: "none" | "verbal" | "written";
   published: boolean;
   media: CaseMedia;
+  role?: string;
+  runsOn?: string;
   summary?: string;
   sections?: { heading: string; body: string[] }[];
   outcomes?: { label: string; value: string }[];
@@ -44,6 +46,8 @@ export const work: CaseStudy[] = [
     status: "handed-over",
     consent: "written",
     published: true,
+    role: "Sole builder",
+    runsOn: "Cloudflare Workers",
     media: {
       kind: "svg",
       diagram: "pricing",
@@ -115,6 +119,8 @@ export const work: CaseStudy[] = [
     status: "active",
     consent: "written",
     published: true,
+    role: "Systems & finance consultant",
+    runsOn: "Google Workspace",
     media: {
       kind: "svg",
       diagram: "finance",
@@ -248,4 +254,9 @@ export function formatSpan({ from, to }: CaseStudy["span"]): string {
     });
   };
   return to ? `${fmt(from)} – ${fmt(to)}` : `${fmt(from)} – present`;
+}
+
+/** Stable anchor id for a section heading ("What I built" → "what-i-built"). */
+export function toId(heading: string): string {
+  return heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
