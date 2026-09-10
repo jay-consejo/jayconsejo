@@ -381,6 +381,30 @@
     stroke-dashoffset: 0;
   }
 }
+/* Gold sweep that keeps circulating after the flow has drawn in: the stroke
+   wipes on from the tail, then off from the tail, so the light travels the
+   connector at the same speed however short or long the route is. The pulse
+   path carries pathLength="100" so one set of dash values fits every route. */
+.flow-pulse {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+.case-figure.in .flow-pulse {
+  animation: pulse-flow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: calc(1.6s + var(--i, 0) * 0.3s);
+}
+@keyframes pulse-flow {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  10% {
+    stroke-dashoffset: 0;
+  }
+  22%,
+  100% {
+    stroke-dashoffset: -100;
+  }
+}
 .toc-link::before {
   content: "";
   flex: none;
@@ -408,6 +432,9 @@
   .case-figure .flow {
     stroke-dashoffset: 0;
     animation: none;
+  }
+  .flow-pulse {
+    display: none;
   }
   #reading-progress {
     display: none;

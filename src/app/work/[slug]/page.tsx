@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { CaseDiagram } from "@/components/work/case-diagram";
+import { CaseFigure } from "@/components/work/case-diagram";
 import { CaseRail } from "@/components/work/case-rail";
 import { ScrollEffects } from "@/components/work/scroll-effects";
 import { STATUS_LABEL, formatSpan, getCase, publishedWork, toId } from "@/lib/work";
@@ -107,11 +107,8 @@ export default async function CasePage({ params }: Props) {
         </header>
 
         {item.media.kind === "svg" && (
-          <figure className="case-figure mt-12 overflow-x-auto rounded-2xl border border-border-subtle/80">
-            {/* Below sm the diagram keeps a readable width and scrolls sideways. */}
-            <div className="min-w-[600px] sm:min-w-0">
-              <CaseDiagram id={item.media.diagram} />
-            </div>
+          <figure className="case-figure mt-12 overflow-hidden rounded-2xl border border-border-subtle/80">
+            <CaseFigure id={item.media.diagram} />
           </figure>
         )}
 
