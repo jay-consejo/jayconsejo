@@ -116,7 +116,7 @@ export const work: CaseStudy[] = [
       "Operations and finance operating system for a Metro Manila D2C brand, built on Google Sheets + Apps Script. Shopify orders land automatically, COD and courier remittances reconcile against the cash book, and a double-entry ledger closes every month behind audit gates.",
     stack: ["Google Sheets", "Apps Script", "Shopify webhooks", "Python audit gates", "Double-entry GL"],
     span: { from: "2026-04" },
-    status: "active",
+    status: "handed-over",
     consent: "written",
     published: true,
     role: "Systems & finance consultant",
