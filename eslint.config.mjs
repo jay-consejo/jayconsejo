@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local-only dirs (worktrees, tracking, proposals) — never lint targets.
+    ".claude/**",
+    "local/**",
+    "design-proposals/**",
   ]),
 ]);
 
