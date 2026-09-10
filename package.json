@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-disclosure.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:disclosure": "node scripts/check-disclosure.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

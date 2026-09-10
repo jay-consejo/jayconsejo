@@ -67,4 +67,5 @@ next-env.d.ts
 
 # local QA tooling (not needed to run the site)
 /shoot.mjs
+/shoot-routes.mjs
 /render-branding.mjs
