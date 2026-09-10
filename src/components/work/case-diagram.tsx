@@ -326,11 +326,8 @@ export function CaseDiagram({ id }: { id: DiagramId }) {
  * Case-page figure. Stacked layout below `sm` so the whole flow is readable at
  * 375px without sideways scrolling; landscape from `sm` up.
  *
- * Both wrappers hide via a media query on top of a normal base `display`.
- * Do not swap the landscape one to `hidden sm:block`: when `display: none` is
- * the base declaration, Chrome never repaints the connectors' animated
- * stroke-dashoffset, so the lines stay invisible while getComputedStyle
- * reports them fully drawn.
+ * The connectors' draw-in is a CSS transition, not a keyframe animation — see
+ * the `.case-figure .flow` rule in globals.css for why. Keep it that way.
  */
 export function CaseFigure({ id }: { id: DiagramId }) {
   return (
