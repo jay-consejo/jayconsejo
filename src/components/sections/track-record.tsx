@@ -23,15 +23,15 @@ export function TrackRecord() {
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium tracking-[0.22em] text-accent-gold/80 uppercase">
-            Track Record
+            Community
           </p>
           <h2 className="mt-4 font-display text-3xl font-semibold leading-tight tracking-tight text-foreground sm:text-4xl md:text-5xl">
-            Real engagements,
+            Building in public
             <br />
-            in tech since 2021
+            since 2021
           </h2>
           <p className="mt-5 text-base leading-relaxed text-text-secondary">
-            Builder by default — community, hackathons, and the speaker circuit on the side.
+            Web3 events, hackathons, and the speaker circuit — the network behind the work.
           </p>
         </div>
 

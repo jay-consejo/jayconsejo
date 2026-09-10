@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/site-config";
+
 const steps = [
   {
     num: "01",
@@ -12,12 +14,12 @@ const steps = [
   {
     num: "03",
     title: "Build",
-    body: "Ship fast. 18 agents handle code, review, and deploy.",
+    body: `Ship fast. ${siteConfig.stats.agents} agents handle code, review, and deploy.`,
   },
   {
     num: "04",
     title: "Deliver",
-    body: "Production-ready. Security-hardened. Documented. Deployed on Vercel, Railway, or Cloudflare.",
+    body: "Production-ready. Security-hardened. Documented. Deployed on Vercel, Cloudflare, or Railway — or inside your Google Workspace when Sheets is the right tool.",
   },
 ];
 
@@ -36,7 +38,7 @@ export function Process() {
             From Idea to Production
           </h2>
           <p className="mt-5 text-lg text-text-secondary">
-            A clear, no-BS process. How six products shipped.
+            A clear, no-BS process. How six products and two client systems shipped.
           </p>
         </div>
 

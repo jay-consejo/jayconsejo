@@ -50,7 +50,7 @@ export function Hero() {
           </span>
         </h1>
         <p className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-text-secondary sm:mt-8 sm:text-lg md:text-xl">
-          Internal AI workflows, customer-facing products, and full-stack web apps — built end-to-end by one builder with 19 AI agents.
+          Internal tools, finance &amp; ops systems, and AI products — built end-to-end by one builder and an {siteConfig.stats.agents}-agent team. {siteConfig.stats.clientSystems} client systems in production, {siteConfig.stats.products} products shipped.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
           <Link

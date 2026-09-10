@@ -1,7 +1,9 @@
+import { siteConfig } from "@/lib/site-config";
+
 const stats = [
-  { number: "4", label: "Products Shipped" },
-  { number: "19", label: "AI Agents Built" },
-  { number: "Web3·AI·Web", label: "Full Stack" },
+  { number: String(siteConfig.stats.clientSystems), label: "Client Systems in Production" },
+  { number: String(siteConfig.stats.products), label: "Products Shipped" },
+  { number: String(siteConfig.stats.agents), label: "AI Agents Built" },
   { number: "Weeks", label: "Not Quarters" },
 ];
 

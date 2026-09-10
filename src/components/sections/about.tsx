@@ -3,11 +3,17 @@ import Image from "next/image";
 const skills = [
   { label: "AI / LLMs", highlight: true },
   { label: "Next.js", highlight: true },
+  { label: "Google Apps Script", highlight: true },
   { label: "Web3", highlight: true },
   { label: "React", highlight: false },
   { label: "TypeScript", highlight: false },
   { label: "Python", highlight: false },
   { label: "Solidity", highlight: false },
+  { label: "Cloudflare Workers", highlight: false },
+  { label: "D1 / SQLite", highlight: false },
+  { label: "Drizzle", highlight: false },
+  { label: "Playwright", highlight: false },
+  { label: "Shopify APIs", highlight: false },
   { label: "Vercel AI SDK", highlight: false },
   { label: "Anthropic", highlight: false },
   { label: "Supabase", highlight: false },
@@ -47,7 +53,7 @@ export function About() {
               Full-stack builder and AI-first founder. Years in Web3 events, marketing, and partnerships — The BLOKC, Hiraya Network, Superteam PH — before going all-in on AI software.
             </p>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              No CS background. Business route — BBA from PUP, years running marketing in Web3. I build products that make business sense, not science projects.
+              No CS background. Business route — BBA from PUP, years running marketing in Web3. I build products that make business sense, not science projects — and I&apos;m as comfortable inside a chart of accounts as inside a codebase.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2">

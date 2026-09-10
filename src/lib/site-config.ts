@@ -4,8 +4,14 @@ export const siteConfig = {
   jobTitle: "AI, Web & Systems Builder",
   title: "Jay Consejo — AI, Web Apps & Systems Builder",
   description:
-    "Jay Consejo — ships AI workflows, web apps & systems in weeks, not quarters. 6 products shipped, 18 agents built. Works globally.",
+    "Jay Consejo — ships internal tools, finance & ops systems, and AI products in weeks, not quarters. 2 client systems in production, 6 products shipped. Manila-based, works globally.",
   url: "https://jayconsejo.com",
+  /** Single source for every headline number on the site. */
+  stats: {
+    clientSystems: 2,
+    products: 6,
+    agents: 18,
+  },
   keywords: [
     "ai integration for business",
     "ai consultant philippines",
@@ -17,15 +23,21 @@ export const siteConfig = {
     "full-stack ai builder",
     "hire ai developer",
     "ai for small business",
+    "internal tools developer",
+    "google sheets automation philippines",
+    "apps script developer",
+    "bookkeeping automation e-commerce",
+    "shopify integration philippines",
+    "pricing tool",
     "jay consejo",
   ],
   nav: [
-    { label: "Work", href: "#projects" },
-    { label: "Process", href: "#process" },
-    { label: "About", href: "#about" },
+    { label: "Work", href: "/#projects" },
+    { label: "Process", href: "/#process" },
+    { label: "About", href: "/#about" },
   ],
   ctaLabel: "Let's Talk",
-  ctaHref: "#contact",
+  ctaHref: "/#contact",
   social: {
     linkedin: "https://www.linkedin.com/in/jayconsejo/",
     github: "https://github.com/jay-consejo",

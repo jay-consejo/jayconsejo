@@ -78,6 +78,8 @@ const personSchema = {
     "Web3",
     "Full-Stack Development",
     "System Architecture",
+    "Google Apps Script",
+    "Internal Tools",
   ],
 };
 
@@ -90,6 +92,9 @@ const professionalServiceSchema = {
   serviceType: [
     "AI Integration",
     "AI Agent Development",
+    "Internal Tools Development",
+    "Finance & Operations Systems",
+    "Google Workspace Automation",
     "Web Application Development",
     "System Architecture",
   ],

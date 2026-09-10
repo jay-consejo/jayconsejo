@@ -45,6 +45,12 @@ export function Footer() {
 
         <nav className="flex items-center gap-6">
           <Link
+            href="/work"
+            className="text-sm text-text-secondary transition-colors hover:text-foreground"
+          >
+            Work
+          </Link>
+          <Link
             href="/privacy"
             className="text-sm text-text-secondary transition-colors hover:text-foreground"
           >
