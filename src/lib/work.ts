@@ -115,7 +115,7 @@ export const work: CaseStudy[] = [
     oneLiner:
       "Operations and finance operating system for a Metro Manila D2C brand, built on Google Sheets + Apps Script. Shopify orders land automatically, COD and courier remittances reconcile against the cash book, and a double-entry ledger closes every month behind audit gates.",
     stack: ["Google Sheets", "Apps Script", "Shopify webhooks", "Python audit gates", "Double-entry GL"],
-    span: { from: "2026-04" },
+    span: { from: "2026-04", to: "2026-10" },
     status: "handed-over",
     consent: "written",
     published: true,
@@ -127,7 +127,7 @@ export const work: CaseStudy[] = [
       alt: "Flow: Shopify webhook and manual entry into the ops book, remittance and cash sync, live management view, close gates, monthly rollover",
     },
     summary:
-      "A setup-plus-retainer engagement: I designed the books, automated the intake and reconciliation, and now run the weekly audit and monthly close as the brand's finance and systems consultant.",
+      "A setup-plus-retainer engagement: I designed the books, automated the intake and reconciliation, and ran the weekly audit and monthly close as the brand's finance and systems consultant before handing the system over to the team.",
     sections: [
       {
         heading: "Context",
