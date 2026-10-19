@@ -12,7 +12,7 @@ import { useSofiaState } from "@/components/sofia-state";
 const timelineSteps = [
   "You submit",
   "Talk to Sofia",
-  "5-min project brief",
+  "Project brief",
   "Meeting with Jay",
 ];
 
@@ -197,7 +197,7 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
             Let&apos;s make something real.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-text-secondary">
-            Got 5 minutes? Talk to my AI Assistant right here for a quick brief.
+            Tell my AI Assistant about your project, right here on this page.
           </p>
         </div>
 
@@ -340,7 +340,7 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
                 <p className="text-sm leading-relaxed text-text-secondary">
                   Submit, and my{" "}
                   <strong className="text-foreground">AI Executive Assistant</strong>{" "}
-                  will pick up right here in your browser. A 5-minute brief — no pitch — so I walk in ready.
+                  will pick up right here in your browser. A short brief — no pitch — so I walk in ready.
                 </p>
               </div>
 
