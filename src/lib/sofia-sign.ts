@@ -239,12 +239,11 @@ async function signNova(lead: Lead, ip: string, ipKey: string, deps: SignDeps, j
   }
 
   // Check the relay here, so the browser never opens a socket to a relay that's down.
+  // Answered as 200: it's an expected state the page shows a card for, and browsers log
+  // every 4xx/5xx response as a console error.
   if (!(await relayHealthy(healthUrl, deps))) {
     deps.logError(`[sofia/sign] relay health check failed ip=${ipKey}`);
-    return json(
-      { code: "unavailable", error: "Sofia isn't available right now. Leave your details and Jay will reach out." },
-      503,
-    );
+    return json({ code: "unavailable", error: "Sofia isn't available right now. Leave your details and Jay will reach out." });
   }
 
   const { ticket, expiresAt } = mintTicket(lead, ip, secret, deps.now());

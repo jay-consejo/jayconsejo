@@ -10,6 +10,8 @@ import { Contact } from "@/components/sections/contact";
 export default async function Home() {
   const h = await headers();
   const country = h.get("x-vercel-ip-country") ?? "PH";
+  // Server-only switch: until cutover, production leaves it unset and keeps ElevenLabs.
+  const provider = process.env.SOFIA_PROVIDER === "nova" ? "nova" : "elevenlabs";
 
   return (
     <>
@@ -19,7 +21,7 @@ export default async function Home() {
       <Work />
       <About />
       <TrackRecord />
-      <Contact defaultCountry={country} />
+      <Contact defaultCountry={country} provider={provider} />
     </>
   );
 }

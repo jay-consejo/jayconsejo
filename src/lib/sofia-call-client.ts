@@ -22,6 +22,8 @@ export type CallState =
   | { phase: "signing" }
   /** The server said no (bad details, already contacted, too many tries): show its message. */
   | { phase: "refused"; status: number; code?: string; message: string }
+  /** The browser's mic prompt may be open. */
+  | { phase: "mic" }
   | { phase: "connecting" }
   | {
       phase: "talking";
@@ -305,7 +307,7 @@ export function startCall(deps: CallDeps): CallControls {
       if (status === 400 || status === 409 || status === 429) {
         finish({ phase: "refused", status, code, message });
       } else {
-        fallback(status === 503 ? "unavailable" : "error");
+        fallback(status === 503 || code === "unavailable" ? "unavailable" : "error");
       }
       return false;
     }
@@ -339,6 +341,7 @@ export function startCall(deps: CallDeps): CallControls {
   async function run() {
     emit({ phase: "signing" });
     if (!(await sign())) return;
+    emit({ phase: "mic" });
     try {
       await audio.openMic();
     } catch {

@@ -164,7 +164,7 @@ describe("sofia sign: Nova", () => {
     assert.equal((await handle(request(FORM))).status, 200);
   });
 
-  it("returns 503 unavailable when the relay is down, erroring or slow", async () => {
+  it("answers unavailable (200, no ticket) when the relay is down, erroring or slow", async () => {
     const down: Route = async () => {
       throw new TypeError("fetch failed");
     };
@@ -177,8 +177,10 @@ describe("sofia sign: Nova", () => {
       const { handle, logs } = setup({ routes: { [HEALTH]: route } });
       const started = Date.now();
       const res = await handle(request(FORM));
-      assert.equal(res.status, 503, label);
-      assert.equal((await res.json()).code, "unavailable");
+      assert.equal(res.status, 200, label);
+      const body = await res.json();
+      assert.equal(body.code, "unavailable");
+      assert.equal(body.ticket, undefined);
       assert.equal(res.headers.get("cache-control"), "no-store");
       assert.ok(Date.now() - started < 2_500, `${label} probe gave up in time`);
       assertNoLeaks(logs, IP);

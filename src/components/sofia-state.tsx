@@ -12,9 +12,12 @@ import {
 export type SofiaStatus =
   | "idle"
   | "signing"
+  | "connecting"
   | "talking"
   | "locked"
   | "already_contacted"
+  | "busy"
+  | "fallback"
   | "error";
 
 type Ctx = {

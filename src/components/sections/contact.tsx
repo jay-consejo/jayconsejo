@@ -1,13 +1,31 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import dynamic from "next/dynamic";
 import Script from "next/script";
 import { CheckCircle2, Mail } from "lucide-react";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import PhoneInput, { type Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { CountrySelect } from "@/components/country-select";
-import { useSofiaState } from "@/components/sofia-state";
+import { useSofiaState, type SofiaStatus } from "@/components/sofia-state";
+import { useSofiaCall } from "@/components/use-sofia-call";
+import type { CallState } from "@/lib/sofia-call-client";
+
+// Loaded on first use, so the call screen doesn't add to the homepage bundle.
+const SofiaCall = dynamic(() => import("@/components/sofia-call").then((m) => m.SofiaCall));
+
+/** The page-wide status (it hides the floating Sofia button) for each call phase. */
+const STATUS_FOR: Record<CallState["phase"], SofiaStatus> = {
+  signing: "signing",
+  mic: "signing",
+  connecting: "connecting",
+  talking: "talking",
+  ended: "locked",
+  busy: "busy",
+  fallback: "fallback",
+  refused: "error",
+};
 
 const timelineSteps = [
   "You submit",
@@ -57,7 +75,13 @@ function validateLead(
   return { ok: true, lead: { name, email, whatsapp: parsed!.number } };
 }
 
-export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) {
+export function Contact({
+  defaultCountry = "PH",
+  provider = "elevenlabs",
+}: {
+  defaultCountry?: string;
+  provider?: "nova" | "elevenlabs";
+}) {
   const { status, setStatus } = useSofiaState();
   const [lead, setLead] = useState<Lead | null>(null);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
@@ -66,6 +90,24 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
   const [errors, setErrors] = useState<FieldErrors>({});
   const [whatsapp, setWhatsapp] = useState<string>(lead?.whatsapp ?? "");
   const widgetContainerRef = useRef<HTMLDivElement | null>(null);
+  const nova = provider === "nova";
+  const call = useSofiaCall((s) => {
+    if (s.phase === "refused") {
+      if (s.status === 409) {
+        setServerMessage(s.message || "We already have your info — Jay will reach out within 24 hours.");
+        setStatus("already_contacted");
+        return;
+      }
+      setErrorMsg(
+        s.status === 429 ? "Too many attempts — please wait a few minutes." : s.message || "Please check your info.",
+      );
+    }
+    setStatus(STATUS_FOR[s.phase]);
+  });
+  const novaPhase = nova && call.state && call.state.phase !== "refused" ? call.state.phase : null;
+  // The progress strip under the card: 0 submit, 1 talk, 2 brief. Hidden on the fallback cards.
+  const stripStep =
+    novaPhase === "busy" || novaPhase === "fallback" ? null : novaPhase === "ended" ? 2 : novaPhase ? 1 : 0;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -77,6 +119,11 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
     setErrors({});
     setLead(result.lead);
     setErrorMsg(null);
+    if (nova) {
+      // Before any await: the call's audio has to start inside this gesture.
+      call.start(result.lead);
+      return;
+    }
     setStatus("signing");
 
     try {
@@ -174,12 +221,14 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
       id="contact"
       className="relative overflow-hidden px-6 py-24 md:py-32"
     >
-      <Script
-        src="https://unpkg.com/@elevenlabs/convai-widget-embed@0.11.7/dist/index.js"
-        integrity="sha384-x7yFJgvQnkRfmQmewthtfovrSJn8TUMndQFtIm/KEsTdZcIUBh5kZwXKZ9RLXJ6y"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
+      {!nova && (
+        <Script
+          src="https://unpkg.com/@elevenlabs/convai-widget-embed@0.11.7/dist/index.js"
+          integrity="sha384-x7yFJgvQnkRfmQmewthtfovrSJn8TUMndQFtIm/KEsTdZcIUBh5kZwXKZ9RLXJ6y"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      )}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -201,8 +250,12 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
           </p>
         </div>
 
-        <div className="mt-12 rounded-2xl border border-border-subtle/80 bg-card/60 p-8 md:p-10">
-          {status === "locked" || status === "already_contacted" ? (
+        <div
+          className={`mt-12 rounded-2xl border border-border-subtle/80 bg-card/60 md:p-10 ${novaPhase === "talking" ? "p-5" : "p-8"}`}
+        >
+          {novaPhase && lead ? (
+            <SofiaCall call={call} lead={lead} onRetry={() => call.start(lead)} />
+          ) : status === "locked" || status === "already_contacted" ? (
             <div className="space-y-4 py-4 text-center">
               <CheckCircle2 className="mx-auto size-12 text-accent-gold" aria-hidden />
               <h3 className="font-display text-2xl font-semibold text-foreground">
@@ -337,11 +390,16 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
 
               <div className="flex gap-3 rounded-xl border border-border-subtle bg-surface/60 p-4">
                 <Mail className="mt-0.5 size-5 shrink-0 text-accent-gold" />
-                <p className="text-sm leading-relaxed text-text-secondary">
-                  Submit, and my{" "}
-                  <strong className="text-foreground">AI Executive Assistant</strong>{" "}
-                  will pick up right here in your browser. A short brief — no pitch — so I walk in ready.
-                </p>
+                {nova ? (
+                  <div>
+                    <FormNote />
+                    <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                      Your browser will ask to use your microphone. The call is recorded so I can follow up.
+                    </p>
+                  </div>
+                ) : (
+                  <FormNote />
+                )}
               </div>
 
               <button
@@ -354,6 +412,9 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
           )}
         </div>
 
+        {nova ? (
+          stripStep !== null && <ProgressStrip current={stripStep} />
+        ) : (
         <ol className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-2">
           {timelineSteps.map((step, i) => (
             <li
@@ -372,7 +433,48 @@ export function Contact({ defaultCountry = "PH" }: { defaultCountry?: string }) 
             </li>
           ))}
         </ol>
+        )}
       </div>
     </section>
+  );
+}
+
+function FormNote() {
+  return (
+    <p className="text-sm leading-relaxed text-text-secondary">
+      Submit, and my{" "}
+      <strong className="text-foreground">AI Executive Assistant</strong>{" "}
+      will pick up right here in your browser. A short brief — no pitch — so I walk in ready.
+    </p>
+  );
+}
+
+/** The four steps under the card, marking where the visitor is. */
+function ProgressStrip({ current }: { current: number }) {
+  return (
+    <ol className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-2">
+      {timelineSteps.map((label, i) => (
+        <li
+          key={label}
+          aria-current={i === current ? "step" : undefined}
+          className={`flex items-center gap-3 text-xs font-medium tracking-[0.08em] uppercase ${i === current ? "text-foreground" : "text-text-secondary"}`}
+        >
+          <span className="flex items-center gap-2">
+            <span
+              aria-hidden
+              className={`size-2 rounded-full border-2 ${
+                i <= current ? "border-accent-gold bg-accent-gold" : "border-border"
+              } ${i === current ? "ring-3 ring-accent-dim" : ""}`}
+            />
+            {label}
+          </span>
+          {i < timelineSteps.length - 1 && (
+            <span className="hidden text-muted-foreground sm:inline" aria-hidden>
+              →
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
   );
 }

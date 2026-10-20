@@ -12,6 +12,7 @@
   --color-accent-gold: var(--accent-gold);
   --color-accent-light: var(--accent-light);
   --color-accent-dim: var(--accent-dim);
+  --color-accent-text: var(--accent-text);
   --color-border-subtle: var(--border-subtle);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
@@ -78,6 +79,8 @@
   --accent: #1A1A20;
   --accent-foreground: #C8A87E;
   --destructive: #C95A4D;
+  /* Gold for small text (captions, links). Same as accent-gold in dark. */
+  --accent-text: #C8A87E;
   --border: #222228;
   --input: #222228;
   --ring: #C8A87E;
@@ -121,6 +124,8 @@
   --accent: #F2ECE3;
   --accent-foreground: #A8886A;
   --destructive: #B84A3D;
+  /* accent-gold is too faint for small text on the warm card (2.9:1); this is 5.4:1. */
+  --accent-text: #7A5E42;
   --border: #DFD5C7;
   --input: #DFD5C7;
   --ring: #A8886A;
@@ -440,4 +445,52 @@
   #reading-progress {
     display: none;
   }
+}
+
+/* Sofia call: voice bars, caption cursor and the caption list's top fade */
+.sofia-bars i {
+  display: block;
+  width: 0.25rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: var(--border);
+}
+.sofia-bars[data-talking] i {
+  background: var(--accent-gold);
+  animation: sofia-talk 1s ease-in-out infinite;
+}
+.sofia-bars[data-talking] i:nth-child(2) { animation-delay: -0.2s; }
+.sofia-bars[data-talking] i:nth-child(3) { animation-delay: -0.45s; }
+.sofia-bars[data-talking] i:nth-child(4) { animation-delay: -0.1s; }
+.sofia-bars[data-talking] i:nth-child(5) { animation-delay: -0.6s; }
+@keyframes sofia-talk {
+  0%, 100% { height: 0.375rem; }
+  50% { height: 1.625rem; }
+}
+.sofia-rec { animation: sofia-blink 2s ease-in-out infinite; }
+@keyframes sofia-blink {
+  50% { opacity: 0.35; }
+}
+.sofia-captions {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.5rem);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 1.5rem);
+  scrollbar-width: thin;
+}
+@media (min-width: 640px) {
+  .sofia-captions li { grid-template-columns: 4rem minmax(0, 1fr); }
+}
+.sofia-captions [data-pending]::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -2px;
+  background: var(--accent-gold);
+  animation: sofia-blink 1s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sofia-bars[data-talking] i { animation: none; height: 1rem; }
+  .sofia-rec,
+  .sofia-captions [data-pending]::after { animation: none; }
 }

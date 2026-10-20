@@ -200,7 +200,7 @@ describe("call client: setup", () => {
     assert.equal(t.states[0]?.phase, "signing");
     await tick();
     assert.deepEqual(t.audio.log, ["openMic"]);
-    assert.equal(t.state?.phase, "connecting");
+    assert.deepEqual(t.states.map((s) => s.phase), ["signing", "mic", "connecting"]);
     assert.equal(t.ws.url, RELAY);
     assert.deepEqual(t.ws.sent, []);
     t.ws.open();
@@ -218,10 +218,10 @@ describe("call client: setup", () => {
     }
   });
 
-  it("falls back as unavailable on 503 and as an error on 502 or a network failure", async () => {
-    const cases: [number, string][] = [[503, "unavailable"], [502, "error"], [0, "error"]];
-    for (const [status, reason] of cases) {
-      const t = setup({ signs: [{ ok: false, status, message: "m" }] });
+  it("falls back as unavailable on 503 or code unavailable, and as an error on 502 or a network failure", async () => {
+    const cases: [number, string, string?][] = [[503, "unavailable"], [200, "unavailable", "unavailable"], [502, "error"], [0, "error"]];
+    for (const [status, reason, code] of cases) {
+      const t = setup({ signs: [{ ok: false, status, code, message: "m" }] });
       await tick();
       assert.deepEqual(t.state, { phase: "fallback", reason, retry: true }, String(status));
       assert.deepEqual(t.sockets, []);

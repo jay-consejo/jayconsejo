@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Mic } from "lucide-react";
-import { useSofiaState } from "@/components/sofia-state";
+import { useSofiaState, type SofiaStatus } from "@/components/sofia-state";
+
+const HIDDEN_WHEN = new Set<SofiaStatus>(["connecting", "talking", "locked", "already_contacted", "busy", "fallback"]);
 
 export function SofiaBubble() {
   const { status } = useSofiaState();
@@ -19,7 +21,8 @@ export function SofiaBubble() {
     return () => observer.disconnect();
   }, []);
 
-  if (status === "locked" || status === "already_contacted") {
+  // Hidden during a call and once it has ended, so it never sits on top of the call card.
+  if (HIDDEN_WHEN.has(status)) {
     return null;
   }
 
