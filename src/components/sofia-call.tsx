@@ -5,20 +5,35 @@ import { Check, Mic, MicOff, PhoneOff } from "lucide-react";
 import type { CallState, Caption, Lead } from "@/lib/sofia-call-client";
 import type { SofiaCall as Call } from "@/components/use-sofia-call";
 import { CallCards, formatLength } from "@/components/sofia-call-cards";
+import { voiceStatus } from "@/lib/sofia-call-copy";
 
 type Props = { call: Call; lead: Lead; onRetry: () => void };
 
 /** Everything inside the contact card once a Nova call starts. */
 export function SofiaCall({ call, lead, onRetry }: Props) {
   const { state } = call;
+  const root = useRef<HTMLDivElement | null>(null);
+  const phase = state?.phase;
+
+  // Each phase swaps the card, which removes the focused button (Submit, Hang up, Try again)
+  // and drops focus to the page. Bring it back to the card, but never take it from elsewhere.
+  useEffect(() => {
+    const active = document.activeElement;
+    if (!active || active === document.body) root.current?.focus({ preventScroll: true });
+  }, [phase]);
+
   if (!state) return null;
-  if (state.phase === "signing" || state.phase === "mic" || state.phase === "connecting") {
-    return <Progress phase={state.phase} />;
-  }
-  if (state.phase === "talking") {
-    return <LiveCall state={state} captions={call.captions} onMute={call.setMuted} onHangup={call.hangup} />;
-  }
-  return <CallCards state={state} lead={lead} startedAt={call.startedAt} lengthSec={call.lengthSec} onRetry={onRetry} />;
+  return (
+    <div ref={root} tabIndex={-1} className="outline-none">
+      {state.phase === "signing" || state.phase === "mic" || state.phase === "connecting" ? (
+        <Progress phase={state.phase} />
+      ) : state.phase === "talking" ? (
+        <LiveCall state={state} captions={call.captions} onMute={call.setMuted} onHangup={call.hangup} />
+      ) : (
+        <CallCards state={state} lead={lead} startedAt={call.startedAt} lengthSec={call.lengthSec} onRetry={onRetry} />
+      )}
+    </div>
+  );
 }
 
 const STEPS = ["Checking your details", "Allow your microphone", "Connecting to Sofia"];
@@ -28,9 +43,9 @@ function Progress({ phase }: { phase: "signing" | "mic" | "connecting" }) {
   return (
     <div role="status" className="py-2">
       <div className="text-center">
-        <p className="font-display text-2xl font-semibold text-accent-text">
+        <h3 className="font-display text-2xl font-semibold text-accent-text">
           {current === 0 ? "Preparing your call…" : "Almost there…"}
-        </p>
+        </h3>
         <p className="mt-2.5 text-text-secondary">
           {current === 0 ? "Sofia's warming up. One moment." : "Sofia picks up as soon as your mic is on."}
         </p>
@@ -85,7 +100,8 @@ function LiveCall({
   onMute: (muted: boolean) => void;
   onHangup: () => void;
 }) {
-  const elapsed = useElapsed(state.startedAt);
+  const elapsed = useElapsedSec(state.startedAt);
+  const voice = voiceStatus({ speaking: state.sofiaSpeaking, muted: state.muted });
   const list = useRef<HTMLOListElement | null>(null);
   // Whether the caller was at the newest line before this update; scrolling up to read stops the follow.
   const following = useRef(true);
@@ -114,13 +130,15 @@ function LiveCall({
           S
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-display text-xl leading-tight font-semibold text-foreground">Sofia</p>
+          <h3 className="font-display text-xl leading-tight font-semibold text-foreground">Sofia</h3>
           <p className="text-sm text-text-secondary">Jay&apos;s AI assistant</p>
         </div>
         <p className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.12em] text-text-secondary uppercase">
           <span aria-hidden className="sofia-rec size-2 rounded-full bg-accent-gold" />
           <span className="sr-only">Call time</span>
-          <time className="tracking-[0.04em] text-foreground tabular-nums">{elapsed}</time>
+          <time dateTime={`PT${elapsed}S`} className="tracking-[0.04em] text-foreground tabular-nums">
+            {formatLength(elapsed)}
+          </time>
         </p>
       </div>
 
@@ -133,10 +151,8 @@ function LiveCall({
           <i />
         </div>
         <p className="text-sm font-medium text-foreground">
-          {state.sofiaSpeaking ? "Sofia is talking" : "Sofia is listening"}
-          <span className="block font-normal text-text-secondary">
-            {state.sofiaSpeaking ? "Just talk to interrupt her" : "Take your time"}
-          </span>
+          {voice.title}
+          <span className="block font-normal text-text-secondary">{voice.hint}</span>
         </p>
       </div>
 
@@ -155,7 +171,7 @@ function LiveCall({
         }}
         tabIndex={0}
         aria-label="Live captions"
-        className="sofia-captions grid max-h-75 gap-3.5 overflow-y-auto rounded-lg pt-2 pr-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-gold"
+        className="sofia-captions grid max-h-75 gap-3.5 overflow-y-auto rounded-lg pt-2 pr-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-text"
       >
         {captions.map((c) => (
           <li key={c.id} className="grid gap-0.5 text-base leading-relaxed sm:gap-3">
@@ -179,7 +195,7 @@ function LiveCall({
         <button
           type="button"
           onClick={() => onMute(!state.muted)}
-          className={`inline-flex h-12 items-center justify-center gap-2 rounded-full border px-6 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-gold sm:min-w-40 ${
+          className={`inline-flex h-12 items-center justify-center gap-2 rounded-full border px-6 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text sm:min-w-40 ${
             state.muted
               ? "border-accent-gold bg-surface text-accent-text"
               : "border-border text-foreground hover:border-accent-gold"
@@ -191,7 +207,7 @@ function LiveCall({
         <button
           type="button"
           onClick={onHangup}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-destructive px-6 text-sm font-semibold text-background transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-gold sm:min-w-40"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-destructive px-6 text-sm font-semibold text-background transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text sm:min-w-40"
         >
           <PhoneOff className="size-5" aria-hidden />
           Hang up
@@ -202,11 +218,11 @@ function LiveCall({
   );
 }
 
-function useElapsed(since: number): string {
+function useElapsedSec(since: number): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
-  return formatLength(Math.max(0, Math.floor((now - since) / 1000)));
+  return Math.max(0, Math.floor((now - since) / 1000));
 }

@@ -118,7 +118,7 @@ function Fallback({
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex h-12 min-w-45 items-center justify-center gap-2 rounded-full bg-accent-gold px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-gold"
+            className="inline-flex h-12 min-w-45 items-center justify-center gap-2 rounded-full bg-accent-gold px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text"
           >
             <RotateCcw className="size-5" aria-hidden />
             Try again
