@@ -1,0 +1,76 @@
+{
+  "note": "Shared test vectors for Sofia call tickets. Dummy secret; regenerate with relay dev/write-ticket-vectors.ts.",
+  "secret": "dummy-ticket-secret-for-tests-only-0123456789",
+  "vectors": [
+    {
+      "name": "plain lead",
+      "lead": {
+        "name": "Maria Santos",
+        "email": "maria@example.com",
+        "whatsapp": "+639171234567"
+      },
+      "ip": "203.0.113.7",
+      "nonce": "AQEBAQEBAQEBAQEBAQEBAQ",
+      "exp": 1800000060000,
+      "leadHash": "PCthqiObciJQz-TswsWg9otfxVQq-9eZKE_c2JYFlrs",
+      "ipHash": "F0VDqAT7zgrZ7pUUpFnH5N",
+      "ticket": "eyJ2IjoxLCJub25jZSI6IkFRRUJBUUVCQVFFQkFRRUJBUUVCQVEiLCJleHAiOjE4MDAwMDAwNjAwMDAsImxlYWRIYXNoIjoiUEN0aHFpT2JjaUpRei1Uc3dzV2c5b3RmeFZRcS05ZVpLRV9jMkpZRmxycyIsImlwSGFzaCI6IkYwVkRxQVQ3emdyWjdwVVVwRm5INU4ifQ.CTvBUju0B0_PLlew1I1mpzfQ6VBMINsqi16ib0ZcRLc"
+    },
+    {
+      "name": "mixed-case email with spaces",
+      "lead": {
+        "name": "  Maria Santos ",
+        "email": "  Maria@Example.COM ",
+        "whatsapp": "+639171234567"
+      },
+      "ip": "203.0.113.7",
+      "nonce": "AgICAgICAgICAgICAgICAg",
+      "exp": 1800000060000,
+      "leadHash": "PCthqiObciJQz-TswsWg9otfxVQq-9eZKE_c2JYFlrs",
+      "ipHash": "F0VDqAT7zgrZ7pUUpFnH5N",
+      "ticket": "eyJ2IjoxLCJub25jZSI6IkFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWciLCJleHAiOjE4MDAwMDAwNjAwMDAsImxlYWRIYXNoIjoiUEN0aHFpT2JjaUpRei1Uc3dzV2c5b3RmeFZRcS05ZVpLRV9jMkpZRmxycyIsImlwSGFzaCI6IkYwVkRxQVQ3emdyWjdwVVVwRm5INU4ifQ.dk7JBVQROUCxaSLtMk7Ig5dS9_p5hKh4mUjxRKhvBPI"
+    },
+    {
+      "name": "phone with punctuation",
+      "lead": {
+        "name": "Sam Lee",
+        "email": "sam@example.com",
+        "whatsapp": "+1 (415) 555-0100"
+      },
+      "ip": "198.51.100.23",
+      "nonce": "AwMDAwMDAwMDAwMDAwMDAw",
+      "exp": 1800000060000,
+      "leadHash": "0YY3sknbuJA_tZtUfoDYIBEZ9tOd4T_XKpzAJhDcIGM",
+      "ipHash": "cvTiddcWdDe6x_KS6IS6D1",
+      "ticket": "eyJ2IjoxLCJub25jZSI6IkF3TURBd01EQXdNREF3TURBd01EQXciLCJleHAiOjE4MDAwMDAwNjAwMDAsImxlYWRIYXNoIjoiMFlZM3NrbmJ1SkFfdFp0VWZvRFlJQkVaOXRPZDRUX1hLcHpBSmhEY0lHTSIsImlwSGFzaCI6ImN2VGlkZGNXZERlNnhfS1M2SVM2RDEifQ.DaWxarCltJM0hiH9tB7VlcbGkKfQcgf2bzqP5R-PXDc"
+    },
+    {
+      "name": "non-ASCII name",
+      "lead": {
+        "name": "José Ñúñez 李明",
+        "email": "jose@example.com",
+        "whatsapp": "+61 412 345 678"
+      },
+      "ip": "192.0.2.44",
+      "nonce": "BAQEBAQEBAQEBAQEBAQEBA",
+      "exp": 1800000060000,
+      "leadHash": "vXarl0230vaBuHhWuSDFf5EjHrIk9THIxzNi45aAK44",
+      "ipHash": "SMzKSvJhEGrT_irs-QmN8C",
+      "ticket": "eyJ2IjoxLCJub25jZSI6IkJBUUVCQVFFQkFRRUJBUUVCQVFFQkEiLCJleHAiOjE4MDAwMDAwNjAwMDAsImxlYWRIYXNoIjoidlhhcmwwMjMwdmFCdUhoV3VTREZmNUVqSHJJazlUSEl4ek5pNDVhQUs0NCIsImlwSGFzaCI6IlNNektTdkpoRUdyVF9pcnMtUW1OOEMifQ.xBTeJO28AsTUnZ6EvV8mx_f0GCBnI1WPt8Z6a7-iPgw"
+    },
+    {
+      "name": "IPv6 caller",
+      "lead": {
+        "name": "Ana Cruz",
+        "email": "ana@example.com",
+        "whatsapp": "+63 917 555 0123"
+      },
+      "ip": "2001:db8::1",
+      "nonce": "BQUFBQUFBQUFBQUFBQUFBQ",
+      "exp": 1800000060000,
+      "leadHash": "E6KFg7YZ2YImJN-310ZeHAFVAAtTCCG_fPxBmFe2_MY",
+      "ipHash": "cHEqrLqLHNRmx1FyeRloko",
+      "ticket": "eyJ2IjoxLCJub25jZSI6IkJRVUZCUVVGQlFVRkJRVUZCUVVGQlEiLCJleHAiOjE4MDAwMDAwNjAwMDAsImxlYWRIYXNoIjoiRTZLRmc3WVoyWUltSk4tMzEwWmVIQUZWQUF0VENDR19mUHhCbUZlMl9NWSIsImlwSGFzaCI6ImNIRXFyTHFMSE5SbXgxRnllUmxva28ifQ._9QmEurii-4aq6zLyu8T4f3wkLCFqVuIe2hPAHSo-j4"
+    }
+  ]
+}

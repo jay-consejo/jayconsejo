@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/check-disclosure.mjs",
-    "build": "next build",
+    "build": "node scripts/check-disclosure.mjs && next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test \"src/**/*.test.ts\"",
     "check:disclosure": "node scripts/check-disclosure.mjs"
   },
   "dependencies": {
