@@ -117,14 +117,20 @@ function isLoopback(relayUrl: string): boolean {
 }
 
 /**
- * Only our own pages may spend a caller's tickets. The local origin is allowed in
- * development, and for a local production build that talks to a relay on this machine.
+ * Only our own pages may spend a caller's tickets or signed URLs. The local origin is allowed
+ * in development, and for a local production build that talks to a relay on this machine.
  */
 function originAllowed(origin: string | null, env: SignDeps["env"]): boolean {
   if (!origin) return false;
   if (SITE_ORIGINS.includes(origin)) return true;
   const local = env.NODE_ENV === "development" || isLoopback(env.SOFIA_RELAY_URL ?? "");
   return local && origin === LOCAL_ORIGIN;
+}
+
+/** A form or text/plain body is a "simple" request another site can send without a preflight. */
+function isJson(req: Request): boolean {
+  const type = req.headers.get("content-type") ?? "";
+  return type.split(";")[0]?.trim().toLowerCase() === "application/json";
 }
 
 /** Repeat-caller check against the call logger. Fails open: any error lets the call go ahead. */
@@ -179,9 +185,13 @@ export function createSignHandler(deps: SignDeps): (req: Request) => Promise<Res
         headers: nova ? { "Cache-Control": "no-store", ...headers } : headers,
       });
 
-    if (nova && !originAllowed(req.headers.get("origin"), deps.env)) {
+    if (!originAllowed(req.headers.get("origin"), deps.env)) {
       deps.log("[sofia/sign] origin refused");
       return json({ error: "Not allowed." }, 403);
+    }
+    if (!isJson(req)) {
+      deps.log("[sofia/sign] non-JSON body refused");
+      return json({ error: "Not allowed." }, 415);
     }
 
     let body: unknown;
