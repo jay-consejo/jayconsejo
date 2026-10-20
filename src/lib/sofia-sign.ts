@@ -25,8 +25,13 @@ export type SignDeps = {
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CONTROL_CHARS = /\p{Cc}/u;
+const MAX_NAME_LENGTH = 80;
+const MAX_EMAIL_LENGTH = 254;
 const SIGNED_URL_SAFETY_MS = 14 * 60 * 1000;
 const HEALTH_TIMEOUT_MS = 1_500;
+/** check_contact and ElevenLabs: give up and take the failure path instead of holding the caller. */
+const OUTSIDE_TIMEOUT_MS = 5_000;
 const MIN_SECRET_LENGTH = 32;
 
 const SITE_ORIGINS = ["https://jayconsejo.com", "https://www.jayconsejo.com"];
@@ -69,10 +74,13 @@ export function validateLead(data: unknown): Validated {
   const e = typeof email === "string" ? email.trim() : "";
   const w = typeof whatsapp === "string" ? whatsapp.trim() : "";
 
-  if (n.length < 2) {
+  if (n.length < 2 || CONTROL_CHARS.test(n)) {
     return { ok: false, error: "Please enter your name (2+ characters)." };
   }
-  if (!EMAIL_REGEX.test(e)) {
+  if (n.length > MAX_NAME_LENGTH) {
+    return { ok: false, error: `Please keep your name to ${MAX_NAME_LENGTH} characters or fewer.` };
+  }
+  if (e.length > MAX_EMAIL_LENGTH || CONTROL_CHARS.test(e) || !EMAIL_REGEX.test(e)) {
     return { ok: false, error: "Please enter a valid email." };
   }
   const parsed = parsePhoneNumberFromString(w, "PH");
@@ -144,7 +152,10 @@ async function alreadyContacted(lead: Lead, deps: SignDeps): Promise<{ matchedOn
     checkUrl.searchParams.set("api_key", loggerApiKey);
     checkUrl.searchParams.set("email", lead.email);
     checkUrl.searchParams.set("whatsapp", lead.whatsapp);
-    const res = await deps.fetch(checkUrl.toString(), { redirect: "follow" });
+    const res = await deps.fetch(checkUrl.toString(), {
+      redirect: "follow",
+      signal: AbortSignal.timeout(OUTSIDE_TIMEOUT_MS),
+    });
     if (!res.ok) {
       deps.logError(`[sofia/sign] check_contact non-200 ${res.status} — failing open`);
       return null;
@@ -274,7 +285,7 @@ async function signElevenLabs(lead: Lead, ipKey: string, deps: SignDeps, json: J
   try {
     const res = await deps.fetch(
       `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${encodeURIComponent(agentId)}`,
-      { headers: { "xi-api-key": apiKey } },
+      { headers: { "xi-api-key": apiKey }, signal: AbortSignal.timeout(OUTSIDE_TIMEOUT_MS) },
     );
     if (!res.ok) {
       const errBody = await res.text().catch(() => "");

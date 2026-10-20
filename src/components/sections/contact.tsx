@@ -321,6 +321,7 @@ export function Contact({
                   type="text"
                   required
                   minLength={2}
+                  maxLength={80}
                   autoComplete="name"
                   defaultValue={lead?.name ?? ""}
                   aria-invalid={errors.name ? true : undefined}
@@ -373,6 +374,7 @@ export function Contact({
                     name="email"
                     type="email"
                     required
+                    maxLength={254}
                     autoComplete="email"
                     defaultValue={lead?.email ?? ""}
                     aria-invalid={errors.email ? true : undefined}

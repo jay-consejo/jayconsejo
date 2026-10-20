@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import { createSignHandler, healthUrlFor, RateLimiter, type SignDeps } from "./sofia-sign.ts";
 import { ipHash, leadHash, TICKET_TTL_MS } from "./sofia-ticket.ts";
 
-const SECRET = "test-secret-0123456789-abcdefghijklmnop";
+const SECRET = "test-secret-0123456789-abcdefghijklmnop"; // gitleaks:allow (test fixture)
 const IP = "203.0.113.7";
 const NOW = 1_800_000_000_000;
 const SITE = "https://jayconsejo.com";
@@ -128,6 +128,37 @@ describe("sofia sign: Nova", () => {
     assert.equal((await handle(request({ ...FORM, whatsapp: "123" }))).status, 400);
   });
 
+  it("caps the name at 80 and the email at 254 characters", async () => {
+    const at = (n: number) => "a".repeat(n - "@example.com".length) + "@example.com";
+    const cases: [Record<string, string>, number, string?][] = [
+      [{ name: "A".repeat(80) }, 200],
+      [{ name: "A".repeat(81) }, 400, "Please keep your name to 80 characters or fewer."],
+      [{ email: at(254) }, 200],
+      [{ email: at(255) }, 400, "Please enter a valid email."],
+    ];
+    for (const [over, status, error] of cases) {
+      const { handle, calls } = setup();
+      const res = await handle(request({ ...FORM, ...over }));
+      assert.equal(res.status, status, JSON.stringify(over).slice(0, 40));
+      if (error) {
+        assert.equal((await res.json()).error, error);
+        assert.deepEqual(calls, [], "nothing outside is called for a refused lead");
+      }
+    }
+  });
+
+  it("refuses control characters in the name or email, but not accents or other scripts", async () => {
+    for (const over of [{ name: "Ana\u0000Reyes" }, { name: "Ana\u0007" }, { name: "Ana\u0085Reyes" }, { email: "ana\u007f@example.com" }]) {
+      const { handle, calls } = setup();
+      assert.equal((await handle(request({ ...FORM, ...over }))).status, 400, JSON.stringify(over));
+      assert.deepEqual(calls, []);
+    }
+    for (const name of ["José Ñúñez", "王小明", "Anne-Marie O'Brien"]) {
+      const { handle } = setup();
+      assert.equal((await handle(request({ ...FORM, name }))).status, 200, name);
+    }
+  });
+
   it("rate-limits the 4th try from one IP with Retry-After", async () => {
     const { handle, logs } = setup();
     for (let i = 0; i < 3; i++) assert.equal((await handle(request(FORM))).status, 200);
@@ -244,6 +275,36 @@ describe("sofia sign: ElevenLabs (default provider)", () => {
   it("returns 502 when its keys are missing", async () => {
     const { handle } = setup({ env: { ...eleven, ELEVENLABS_API_KEY: undefined } });
     assert.equal((await handle(request(FORM))).status, 502);
+  });
+});
+
+describe("sofia sign: outside calls time out after 5 s", () => {
+  const hang: Route = (_url, init) =>
+    new Promise((_resolve, reject) => {
+      init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+    });
+  const timed = async (run: () => Promise<Response>) => {
+    const started = Date.now();
+    const res = await run();
+    return { res, ms: Date.now() - started };
+  };
+
+  it("lets the call go ahead when check_contact hangs, and returns 502 when ElevenLabs hangs", { timeout: 10_000 }, async () => {
+    const logger = setup({
+      env: { SOFIA_LOGGER_URL: LOGGER, SOFIA_LOGGER_API_KEY: "logger-key-value" },
+      routes: { [LOGGER]: hang },
+    });
+    const eleven = setup({
+      env: { SOFIA_PROVIDER: undefined, ELEVENLABS_API_KEY: "el-key-value", ELEVENLABS_AGENT_ID: "agent-1" },
+      routes: { "https://api.elevenlabs.io/": hang },
+    });
+    const [a, b] = await Promise.all([timed(() => logger.handle(request(FORM))), timed(() => eleven.handle(request(FORM)))]);
+
+    assert.equal(a.res.status, 200, "check_contact fails open");
+    assert.ok((await a.res.json()).ticket);
+    assert.equal(b.res.status, 502);
+    for (const { ms } of [a, b]) assert.ok(ms >= 4_500 && ms < 6_500, `gave up after ${ms} ms`);
+    assertNoLeaks([...logger.logs, ...eleven.logs], IP, "logger-key-value", "el-key-value");
   });
 });
 
