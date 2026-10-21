@@ -46,6 +46,13 @@ describe("contentSecurityPolicy", () => {
     assert.ok(!directives(policy).get("script-src")?.includes("blob:"));
   });
 
+  it("allows the Cloudflare Web Analytics beacon, which reports to this site's own /cdn-cgi/rum", () => {
+    const d = directives(contentSecurityPolicy({}));
+    assert.ok(d.get("script-src")?.includes("https://static.cloudflareinsights.com"));
+    assert.ok(d.get("connect-src")?.includes("'self'"));
+    assert.ok(!d.get("connect-src")?.some((v) => v.includes("cloudflareinsights")));
+  });
+
   it("allows the phone field's flag images", () => {
     const d = directives(contentSecurityPolicy({}));
     assert.ok(d.get("img-src")?.includes("https://purecatamphetamine.github.io/country-flag-icons/"));

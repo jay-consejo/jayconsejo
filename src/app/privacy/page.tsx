@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <div className="mx-auto max-w-3xl">
         <h1 className="text-3xl font-bold tracking-tight">Privacy Policy</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Last updated: April 2026
+          Last updated: October 2026
         </p>
 
         <div className="mt-8 space-y-8 text-muted-foreground">
@@ -23,8 +23,25 @@ export default function PrivacyPage() {
             <p className="mt-2">
               When you use our contact form, we collect the information you
               provide: your name, email address, and message content. We do not
-              collect data automatically through cookies or tracking scripts
-              unless explicitly stated.
+              collect data automatically through cookies or tracking scripts,
+              except as described under Analytics and Security below.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground">
+              Analytics and Security
+            </h2>
+            <p className="mt-2">
+              This site runs through Cloudflare. Cloudflare Web Analytics counts
+              page views and measures how fast pages load, along with the
+              referring site, browser, device type and country. It does not use
+              cookies or local storage, and it does not build a profile of you.
+            </p>
+            <p className="mt-2">
+              Cloudflare also checks that visitors are not automated bots. That
+              check sets one cookie, <code>cf_clearance</code>, which records that
+              your browser passed. It is not used for analytics or advertising.
             </p>
           </section>
 
