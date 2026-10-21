@@ -39,7 +39,7 @@ export function Process() {
             From Idea to Production
           </h2>
           <p className="mt-5 text-lg text-text-secondary">
-            A clear, no-BS process. How six products and two client systems shipped.
+            A clear, no-BS process. How six products and three client systems shipped.
           </p>
         </div>
 

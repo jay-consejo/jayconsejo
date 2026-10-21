@@ -4,11 +4,11 @@ export const siteConfig = {
   jobTitle: "AI, Web & Systems Builder",
   title: "Jay Consejo — AI, Web Apps & Systems Builder",
   description:
-    "Jay Consejo — ships internal tools, finance & ops systems, and AI products in weeks, not quarters. 2 client systems in production, 6 products shipped. Manila-based, works globally.",
+    "Jay Consejo — ships internal tools, finance & ops systems, and AI products in weeks, not quarters. 3 client systems in production, 6 products shipped. Manila-based, works globally.",
   url: "https://jayconsejo.com",
   /** Single source for every headline number on the site. */
   stats: {
-    clientSystems: 2,
+    clientSystems: 3,
     products: 6,
     agents: 18,
   },

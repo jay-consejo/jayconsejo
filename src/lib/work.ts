@@ -3,7 +3,7 @@ const R2 = "https://pub-f0ac1ec148884b718fc28632174966a4.r2.dev";
 export type CaseMedia =
   | { kind: "video"; src: string; alt: string }
   | { kind: "gradient"; gradient: string; label: string }
-  | { kind: "svg"; diagram: "pricing" | "finance"; alt: string };
+  | { kind: "svg"; diagram: "pricing" | "finance" | "embedded"; alt: string };
 
 export type CaseStudy = {
   slug: string;
@@ -175,6 +175,90 @@ export const work: CaseStudy[] = [
       {
         title: "Why the rollover is one button",
         body: "Two buttons in two projects for one operation produced a month where nobody was sure the rollover had run. Now the carry lives inside the transition, and a standalone re-sweep remains only for orders that settle mid-month.",
+      },
+    ],
+  },
+  {
+    slug: "embedded-operations-automation",
+    kind: "client",
+    tag: "Operations & Automation · E-commerce",
+    title: "Embedded Operations & Automation",
+    oneLiner:
+      "Two weeks embedded as inventory lead at a US direct-to-consumer personal-care brand: a purchasing tool that shows its working, a support inbox that clears its own noise, a knowledge base that answers only from approved articles, and an accessibility audit with a fix for every finding.",
+    stack: ["FastAPI", "React 19", "TypeScript", "Railway", "Shopify & Amazon APIs"],
+    span: { from: "2026-09", to: "2026-10" },
+    status: "handed-over",
+    consent: "none",
+    published: true,
+    role: "Inventory lead (embedded)",
+    runsOn: "Railway",
+    media: {
+      kind: "svg",
+      diagram: "embedded",
+      alt: "Flow: 3PL stock feed, reorder check, purchase order, approval, shipment, receiving, paid and closed; plus support inbox rules, knowledge base and accessibility audit",
+    },
+    summary:
+      "A two-week embedded engagement. I took over inventory, rebuilt the purchasing tool around numbers the team can check, cleared the support inbox's noise without touching a customer, and gave support a knowledge base that answers only from its own articles.",
+    sections: [
+      {
+        heading: "Context",
+        body: [
+          "A US direct-to-consumer personal-care brand sells through its own Shopify store, Amazon and TikTok. It ships from a third-party logistics (3PL) warehouse and buys from several overseas suppliers on long lead times. A small support team answers customers by email.",
+          "I joined the team for about two weeks in late September 2026 as inventory lead, reporting to the CEO, and picked up purchasing, support and compliance work along the way.",
+        ],
+      },
+      {
+        heading: "Problem",
+        body: [
+          "The inventory tool's numbers couldn't be trusted. For one supplier's four-product reorder, its suggestion came to about seven times the order I rebuilt by hand from three months of data. Most of it was on a product that already had more than six months of stock.",
+          "Its days-until-reorder figure could swing by about two weeks overnight with no change in stock. TikTok orders went straight to the 3PL, so they never reached its demand. And one screen quietly deleted pending purchase-order lines.",
+          "Support had a different problem: real customer emails sat among hundreds of machine notifications. The median first reply was about 1.3 hours, under a third of emails got an answer inside the one-hour target, and roughly one in eight got none.",
+        ],
+      },
+      {
+        heading: "Inventory and purchasing",
+        body: [
+          "A new version of the inventory tool, running on real data. It reads the 3PL's stock every 30 minutes, read-only and without keeping customer details. On its first read, the units owed to customers matched the 3PL's own count exactly. A Reorder Check shows the steps behind every number. While Amazon isn't connected, shipments to Amazon count as demand on the warehouse, so products that sell mostly there say \"order\" early, never late.",
+          "On top of it, a purchase-order module covers suppliers and their terms, orders from draft to closed, rounding to minimum order quantities, boxes and pallets, and approval above a set amount, where nobody approves their own order. It also tracks shipments, receiving by the 3PL's count, payments and follow-ups. A user guide and an operations guide went with it.",
+          "Then the purchasing itself: daily stock checks, open orders with three suppliers, and six supplier studies. Each study was built from the full chat history with that supplier: order history, quoted lead times against actual, late shipments, payments, freight and receiving, plus a checklist for every order. Actual deposit-to-arrival times ran from 48 to 86 days.",
+        ],
+      },
+      {
+        heading: "Support and accessibility",
+        body: [
+          "870 open tickets that needed no work (ad-platform approvals and receipts, good-review alerts, deleted comments, spam) were labelled and closed in one pass. Nothing was sent to anyone, and every ticket can be reopened. Four rules now close the same noise as it arrives. The first overnight check closed 13, all correct, with no customer ticket touched.",
+          "Automatic answers to product questions are built and tested, but not switched on. On 59 practice tickets the answer rules were right every time, and the one-question check caught every email that asked more than one thing. An answer goes out by itself only when it passes every check: one approved topic, one question, no existing order, the whole answer in approved facts, and nothing sensitive.",
+          "A support knowledge base the team owns instead of renting: 39 articles built from the brand's own website, a search, and an Ask box that answers only with passages from those articles and says so when the answer isn't there. It found the right article for 20 of 20 test questions and refused 10 of 10 off-topic ones. A new-starter course (5 stages, 19 lessons, 84 questions) lets supervisors follow each learner's progress.",
+          "An accessibility audit of a flagship product page against WCAG 2.2 AA found 18 issues. Three were critical, all in the buying path, inside third-party widgets that didn't work by keyboard or screen reader. The CEO got a summary. The developers got a report with a fix, code and a \"done when\" test for every finding, plus a six-week fix plan.",
+        ],
+      },
+      {
+        heading: "How it stays safe",
+        body: [
+          "Nothing customer-facing changed without the CEO's approval. New numbers ship beside the old ones with their switches off, and turning one on needs the CEO's OK.",
+          "Before the purchase-order module went live, an independent review found 12 issues. Ten were fixed first, including both serious ones: cancelling an order could leave a warehouse delivery locked, and an approved large order could have its supplier or lines swapped at the same total without a new approval. The other two were left on purpose, with the reasons written down. The full test run passed 1,615 server checks and 349 screen checks, and a security check found nothing critical or high.",
+          "Updates go out on Monday mornings after a backup, never on a Friday and never during the peak-season freeze. There are always at least two super admins, so one forgotten password can't lock everyone out.",
+        ],
+      },
+    ],
+    outcomes: [
+      { label: "Embedded", value: "2 wks" },
+      { label: "Noise tickets closed", value: "870" },
+      { label: "Ask-box test answers", value: "20/20" },
+      { label: "Automated checks passed", value: "1,964" },
+    ],
+    notes: [
+      {
+        title: "Why the reorder number shows its working",
+        body: "If the inventory owner can't check a figure, they'll override it by gut. The Reorder Check lays out every step, and new numbers run beside the old ones, switched off, until someone has compared them.",
+      },
+      {
+        title: "Why the Ask box doesn't write",
+        body: "Agents repeat what it shows to customers. So it returns passages from approved articles word for word, and says when the answer isn't there, rather than writing something that only sounds right.",
+      },
+      {
+        title: "Why automation started with noise",
+        body: "Closing machine notifications can't upset a customer, and every closed ticket can be reopened. Starting there cleared the inbox safely and set up the real goal: the one-hour reply target with the agents already on the team, without hiring.",
       },
     ],
   },

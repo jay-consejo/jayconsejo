@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { CaseDiagram } from "@/components/work/case-diagram";
 import type { CaseStudy } from "@/lib/work";
 
-function Media({ item }: { item: CaseStudy }) {
+function Media({ item, wide }: { item: CaseStudy; wide: boolean }) {
   const m = item.media;
   if (m.kind === "video") {
     return (
@@ -22,7 +22,10 @@ function Media({ item }: { item: CaseStudy }) {
   }
   if (m.kind === "svg") {
     return (
-      <div className="border-b border-border-subtle/80" aria-label={m.alt}>
+      <div
+        className={`border-b border-border-subtle/80 ${wide ? "md:flex md:items-center md:border-r md:border-b-0 md:bg-surface" : ""}`}
+        aria-label={m.alt}
+      >
         <CaseDiagram id={m.diagram} />
       </div>
     );
@@ -37,12 +40,15 @@ function Media({ item }: { item: CaseStudy }) {
   );
 }
 
-export function WorkCard({ item }: { item: CaseStudy }) {
+/** `wide` spans both grid columns from md up, media beside the text instead of above it. */
+export function WorkCard({ item, wide = false }: { item: CaseStudy; wide?: boolean }) {
   const href = item.published ? `/work/${item.slug}` : undefined;
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-border-subtle/80 bg-card/50 transition-all hover:border-accent-gold/40 hover:bg-card">
-      <Media item={item} />
-      <div className="flex flex-1 flex-col p-7">
+    <article
+      className={`group flex flex-col overflow-hidden rounded-2xl border border-border-subtle/80 bg-card/50 transition-all hover:border-accent-gold/40 hover:bg-card ${wide ? "md:col-span-2 md:grid md:grid-cols-2" : ""}`}
+    >
+      <Media item={item} wide={wide} />
+      <div className={`flex flex-1 flex-col p-7 ${wide ? "md:justify-center" : ""}`}>
         <div className="inline-flex w-fit items-center rounded-full border border-accent-gold/30 bg-accent-dim px-3 py-1 text-[11px] font-medium tracking-[0.08em] text-accent-gold uppercase">
           {item.tag}
         </div>
@@ -77,5 +83,20 @@ export function WorkCard({ item }: { item: CaseStudy }) {
         )}
       </div>
     </article>
+  );
+}
+
+/**
+ * Two-column grid of work cards. An odd last card spans both columns, so a row
+ * never ends half-empty on desktop.
+ */
+export function WorkGrid({ items }: { items: CaseStudy[] }) {
+  const oddOut = items.length > 1 && items.length % 2 === 1;
+  return (
+    <div className="mt-5 grid gap-6 md:grid-cols-2">
+      {items.map((item, i) => (
+        <WorkCard key={item.slug} item={item} wide={oddOut && i === items.length - 1} />
+      ))}
+    </div>
   );
 }
