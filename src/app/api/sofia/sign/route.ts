@@ -1,4 +1,5 @@
 import { createSignHandler, RateLimiter } from "@/lib/sofia-sign";
+import { SOFIA_ONLINE } from "@/lib/sofia-switch";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,7 @@ const handleSign = createSignHandler({
   log: (line) => console.log(line),
   logError: (line, err) => (err === undefined ? console.error(line) : console.error(line, err)),
   limiter: new RateLimiter(),
+  online: SOFIA_ONLINE,
 });
 
 export function POST(req: Request) {

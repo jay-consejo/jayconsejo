@@ -22,6 +22,8 @@ export type SignDeps = {
   log: (line: string) => void;
   logError: (line: string, err?: unknown) => void;
   limiter: RateLimiter;
+  /** False refuses every request with 503 before anything else runs. Default true. */
+  online?: boolean;
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -195,6 +197,10 @@ export function createSignHandler(deps: SignDeps): (req: Request) => Promise<Res
         status,
         headers: nova ? { "Cache-Control": "no-store", ...headers } : headers,
       });
+
+    if (deps.online === false) {
+      return json({ error: "Sofia is offline." }, 503);
+    }
 
     if (!originAllowed(req.headers.get("origin"), deps.env)) {
       deps.log("[sofia/sign] origin refused");

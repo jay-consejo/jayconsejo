@@ -1,10 +1,11 @@
 import { siteConfig } from "@/lib/site-config";
+import { FIRST_CALL_LINE } from "@/lib/sofia-switch";
 
 const steps = [
   {
     num: "01",
     title: "Discover",
-    body: "Define the problem and what \"done\" looks like. My AI Assistant runs the initial call.",
+    body: `Define the problem and what "done" looks like. ${FIRST_CALL_LINE}`,
   },
   {
     num: "02",

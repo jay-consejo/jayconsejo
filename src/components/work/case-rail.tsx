@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BOOK_CALL_LINE } from "@/lib/sofia-switch";
 import { STATUS_LABEL, formatSpan, toId, type CaseStudy } from "@/lib/work";
 
 function Card({
@@ -84,7 +85,7 @@ export function CaseRail({ item }: { item: CaseStudy }) {
           Need something like this?
         </h2>
         <p className="mt-3 text-sm text-text-secondary">
-          Book a short call. My assistant Sofia takes the first one.
+          {BOOK_CALL_LINE}
         </p>
         <Link
           href="/#contact"

@@ -38,21 +38,12 @@ describe("contentSecurityPolicy", () => {
     }
   });
 
-  it("allows only the pinned ElevenLabs widget build, not all of unpkg", () => {
-    const d = directives(contentSecurityPolicy({}));
-    assert.ok(d.get("script-src")?.includes("https://unpkg.com/@elevenlabs/convai-widget-embed@0.11.7/"));
-    assert.ok(!d.get("script-src")?.includes("https://unpkg.com"));
-  });
-
-  it("covers what the ElevenLabs widget loads during a call, but not its fingerprint ping", () => {
-    const d = directives(contentSecurityPolicy({}));
-    assert.ok(d.get("script-src")?.includes("blob:"), "audio worklets from blob: URLs");
-    assert.ok(d.get("script-src")?.includes("https://cdn.jsdelivr.net/npm/@alexanderolsen/libsamplerate-js@2.1.2/"));
-    assert.ok(d.get("style-src")?.includes("https://fonts.googleapis.com"));
-    assert.ok(d.get("font-src")?.includes("https://fonts.gstatic.com"));
-    assert.ok(d.get("img-src")?.includes("https://storage.googleapis.com/eleven-public-cdn/"));
-    assert.ok(d.get("connect-src")?.includes("wss://livekit.rtc.elevenlabs.io"));
-    assert.ok(!d.get("connect-src")?.some((v) => v.includes("openfpcdn")));
+  it("allows no ElevenLabs widget hosts (the site no longer loads it)", () => {
+    const policy = contentSecurityPolicy({});
+    for (const host of ["unpkg.com", "jsdelivr", "elevenlabs", "eleven-public-cdn", "fonts.googleapis", "fonts.gstatic"]) {
+      assert.ok(!policy.includes(host), host);
+    }
+    assert.ok(!directives(policy).get("script-src")?.includes("blob:"));
   });
 
   it("allows the phone field's flag images", () => {

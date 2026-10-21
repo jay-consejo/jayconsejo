@@ -4,6 +4,7 @@ import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { SofiaBubble } from "@/components/sofia-bubble";
 import { SofiaStateProvider } from "@/components/sofia-state";
+import { SOFIA_ONLINE } from "@/lib/sofia-switch";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
@@ -149,7 +150,7 @@ export default function RootLayout({
             <Nav />
             <main className="flex-1">{children}</main>
             <Footer />
-            <SofiaBubble />
+            {SOFIA_ONLINE && <SofiaBubble />}
           </SofiaStateProvider>
         </ThemeProvider>
       </body>

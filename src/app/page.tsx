@@ -6,6 +6,8 @@ import { Work } from "@/components/sections/work";
 import { About } from "@/components/sections/about";
 import { TrackRecord } from "@/components/sections/track-record";
 import { Contact } from "@/components/sections/contact";
+import { ContactEmail } from "@/components/sections/contact-email";
+import { SOFIA_ONLINE } from "@/lib/sofia-switch";
 
 export default async function Home() {
   const h = await headers();
@@ -21,7 +23,7 @@ export default async function Home() {
       <Work />
       <About />
       <TrackRecord />
-      <Contact defaultCountry={country} provider={provider} />
+      {SOFIA_ONLINE ? <Contact defaultCountry={country} provider={provider} /> : <ContactEmail />}
     </>
   );
 }

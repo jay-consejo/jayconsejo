@@ -17,7 +17,9 @@ const VETTED = { name: "Ana Reyes", email: "Ana@Example.com", whatsapp: "+639171
 
 type Route = (url: string, init?: RequestInit) => Promise<Response>;
 
-function setup(opts: { env?: Record<string, string | undefined>; routes?: Record<string, Route> } = {}) {
+function setup(
+  opts: { env?: Record<string, string | undefined>; routes?: Record<string, Route>; online?: boolean } = {},
+) {
   const logs: string[] = [];
   const calls: string[] = [];
   const routes: Record<string, Route> = {
@@ -43,6 +45,7 @@ function setup(opts: { env?: Record<string, string | undefined>; routes?: Record
     log: (line) => logs.push(line),
     logError: (line, err) => logs.push(err === undefined ? line : `${line} ${String(err)}`),
     limiter: new RateLimiter(),
+    online: opts.online,
   };
   return { handle: createSignHandler(deps), logs, calls };
 }
@@ -348,4 +351,21 @@ describe("healthUrlFor", () => {
     assert.equal(healthUrlFor("not a url"), null);
     assert.equal(healthUrlFor("https://sofia.jayconsejo.com/call"), null);
   });
+});
+
+describe("sofia sign: offline", () => {
+  for (const provider of ["nova", undefined]) {
+    it(`refuses every request with 503 and calls nothing (provider ${provider ?? "elevenlabs"})`, async () => {
+      const { handle, calls } = setup({
+        online: false,
+        env: { SOFIA_PROVIDER: provider, ELEVENLABS_API_KEY: "k", ELEVENLABS_AGENT_ID: "a" },
+      });
+      for (const req of [request(FORM), request(FORM, {}), request("not json")]) {
+        const res = await handle(req);
+        assert.equal(res.status, 503);
+        assert.deepEqual(await res.json(), { error: "Sofia is offline." });
+      }
+      assert.deepEqual(calls, []);
+    });
+  }
 });

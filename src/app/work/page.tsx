@@ -3,6 +3,7 @@ import Link from "next/link";
 import { WorkCard } from "@/components/work-card";
 import { clientWork, productWork } from "@/lib/work";
 import { siteConfig } from "@/lib/site-config";
+import { BOOK_CALL_LINE } from "@/lib/sofia-switch";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -56,7 +57,7 @@ export default function WorkIndexPage() {
             Need something like this?
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-text-secondary">
-            Book a short call. My assistant Sofia takes the first one.
+            {BOOK_CALL_LINE}
           </p>
           <Link
             href="/#contact"
