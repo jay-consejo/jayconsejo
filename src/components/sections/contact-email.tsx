@@ -1,6 +1,6 @@
 import { Mail } from "lucide-react";
 
-const JAY_EMAIL = "consejo.jay@gmail.com";
+export const JAY_EMAIL = "consejo.jay@gmail.com";
 const MAILTO = `mailto:${JAY_EMAIL}?subject=${encodeURIComponent("Project inquiry")}`;
 
 const steps = ["You email", "Short call", "Project brief"];

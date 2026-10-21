@@ -1,10 +1,23 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { JAY_EMAIL } from "@/components/sections/contact-email";
+import { privacyCopy } from "@/lib/privacy-copy";
+import { SOFIA_ONLINE } from "@/lib/sofia-switch";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Privacy policy for jayconsejo.com",
 };
+
+const copy = privacyCopy({ online: SOFIA_ONLINE });
+
+const emailLink = (
+  <a
+    href={`mailto:${JAY_EMAIL}`}
+    className="font-medium text-foreground underline underline-offset-4"
+  >
+    {JAY_EMAIL}
+  </a>
+);
 
 export default function PrivacyPage() {
   return (
@@ -20,13 +33,25 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-foreground">
               Information We Collect
             </h2>
-            <p className="mt-2">
-              When you use our contact form, we collect the information you
-              provide: your name, email address, and message content. We do not
-              collect data automatically through cookies or tracking scripts,
-              except as described under Analytics and Security below.
-            </p>
+            {copy.collected.map((p) => (
+              <p key={p} className="mt-2">
+                {p}
+              </p>
+            ))}
           </section>
+
+          {copy.call.length > 0 && (
+            <section>
+              <h2 className="text-xl font-semibold text-foreground">
+                Calls with Sofia
+              </h2>
+              {copy.call.map((p) => (
+                <p key={p} className="mt-2">
+                  {p}
+                </p>
+              ))}
+            </section>
+          )}
 
           <section>
             <h2 className="text-xl font-semibold text-foreground">
@@ -49,22 +74,30 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-foreground">
               How We Use Your Information
             </h2>
-            <p className="mt-2">
-              We use the information you provide solely to respond to your
-              inquiry and to communicate about potential projects. We do not
-              sell, rent, or share your personal information with third parties.
-            </p>
+            {copy.use.map((p) => (
+              <p key={p} className="mt-2">
+                {p}
+              </p>
+            ))}
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              {copy.providers.map((s) => (
+                <li key={s.name}>
+                  <span className="font-medium text-foreground">{s.name}</span>{" "}
+                  {s.use}
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-foreground">
               Data Retention
             </h2>
-            <p className="mt-2">
-              We retain your contact information only as long as necessary to
-              fulfill the purpose for which it was collected. You may request
-              deletion of your data at any time by contacting us.
-            </p>
+            {copy.retention.map((p) => (
+              <p key={p} className="mt-2">
+                {p}
+              </p>
+            ))}
           </section>
 
           <section>
@@ -73,23 +106,16 @@ export default function PrivacyPage() {
             </h2>
             <p className="mt-2">
               You have the right to access, correct, or delete the personal data
-              we hold about you. To exercise these rights, please contact us
-              using the information below.
+              we hold about you. To exercise these rights, email us at the
+              address below.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-foreground">Contact</h2>
             <p className="mt-2">
-              For questions about this privacy policy or your data, please reach
-              out through our{" "}
-              <Link
-                href="/#contact"
-                className="font-medium text-foreground underline underline-offset-4"
-              >
-                contact form
-              </Link>
-              .
+              For questions about this privacy policy or your data, email{" "}
+              {emailLink}.
             </p>
           </section>
         </div>
