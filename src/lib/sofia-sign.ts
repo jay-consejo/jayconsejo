@@ -127,12 +127,22 @@ function isLoopback(relayUrl: string): boolean {
 }
 
 /**
+ * A Vercel preview's own addresses: its deployment URL and its branch URL, exactly. Empty
+ * outside a preview, so production never accepts a vercel.app origin.
+ */
+function previewOrigins(env: SignDeps["env"]): string[] {
+  if (env.VERCEL_ENV !== "preview") return [];
+  return [env.VERCEL_URL, env.VERCEL_BRANCH_URL].filter((host): host is string => !!host).map((host) => `https://${host}`);
+}
+
+/**
  * Only our own pages may spend a caller's tickets or signed URLs. The local origin is allowed
  * in development, and for a local production build that talks to a relay on this machine.
  */
 function originAllowed(origin: string | null, env: SignDeps["env"]): boolean {
   if (!origin) return false;
   if (SITE_ORIGINS.includes(origin)) return true;
+  if (previewOrigins(env).includes(origin)) return true;
   const local = env.NODE_ENV === "development" || isLoopback(env.SOFIA_RELAY_URL ?? "");
   return local && origin === LOCAL_ORIGIN;
 }

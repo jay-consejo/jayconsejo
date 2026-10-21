@@ -122,6 +122,52 @@ describe("sofia sign: Nova", () => {
     assert.equal((await loopback.handle(request(FORM, local))).status, 200);
   });
 
+  describe("Vercel previews", () => {
+    const PREVIEW_ENV = {
+      VERCEL_ENV: "preview",
+      VERCEL_URL: "jayconsejo-abc123xyz-team.vercel.app",
+      VERCEL_BRANCH_URL: "jayconsejo-git-relay-test-team.vercel.app",
+    };
+
+    it("accepts a preview's own deployment and branch URLs", async () => {
+      for (const origin of ["https://jayconsejo-abc123xyz-team.vercel.app", "https://jayconsejo-git-relay-test-team.vercel.app"]) {
+        const { handle } = setup({ env: PREVIEW_ENV });
+        assert.equal((await handle(request(FORM, { origin }))).status, 200, origin);
+      }
+    });
+
+    it("refuses other previews, lookalikes and plain http in a preview", async () => {
+      const refused = [
+        "https://jayconsejo-other999-team.vercel.app",
+        "http://jayconsejo-abc123xyz-team.vercel.app",
+        "https://jayconsejo-abc123xyz-team.vercel.app.evil.example",
+        "https://x.jayconsejo-abc123xyz-team.vercel.app",
+        "https://evil.vercel.app",
+      ];
+      for (const origin of refused) {
+        const { handle, calls } = setup({ env: PREVIEW_ENV });
+        assert.equal((await handle(request(FORM, { origin }))).status, 403, origin);
+        assert.deepEqual(calls, [], origin);
+      }
+    });
+
+    it("leaves production as it was: its own vercel.app URLs stay refused", async () => {
+      for (const env of [
+        { ...PREVIEW_ENV, VERCEL_ENV: "production" },
+        { ...PREVIEW_ENV, VERCEL_ENV: undefined },
+      ]) {
+        const { handle } = setup({ env });
+        assert.equal((await handle(request(FORM, { origin: "https://jayconsejo-abc123xyz-team.vercel.app" }))).status, 403);
+        assert.equal((await handle(request(FORM, { origin: SITE }))).status, 200);
+      }
+    });
+
+    it("ignores an empty preview URL", async () => {
+      const { handle } = setup({ env: { VERCEL_ENV: "preview", VERCEL_URL: "", VERCEL_BRANCH_URL: undefined } });
+      assert.equal((await handle(request(FORM, { origin: "https://" }))).status, 403);
+    });
+  });
+
   it("rejects bad JSON and bad details with 400", async () => {
     const { handle } = setup();
     assert.equal((await handle(request("{not json"))).status, 400);
