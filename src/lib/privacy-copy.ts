@@ -26,7 +26,7 @@ export function privacyCopy({ online }: { online: boolean }): PrivacyCopy {
     call: online
       ? [
           "Sofia is an AI voice assistant. Your voice is processed live by Amazon Nova Sonic on Amazon Bedrock so that Sofia can understand and answer you, and the call is transcribed as it happens. We do not record or keep the audio.",
-          "After the call, the transcript is summarized by AI, using Mistral on Amazon Bedrock. The summary, your name, email address and WhatsApp number, and details from the call such as your project type, budget range and timeline are saved to a Google Sheet that only Jay can open. The full transcript is not kept.",
+          "After the call, the transcript is summarized by AI, using Mistral on Amazon Bedrock. The written transcript, the summary, your name, email address and WhatsApp number, and details from the call such as your project type, budget range and timeline are saved to a Google Sheet that only Jay can open.",
           "Before a call starts, we check your email address and WhatsApp number against recent calls, to limit repeat calls. If you book a meeting during the call, your name and email address go to Jay's Google Calendar, which sends you the invite.",
         ]
       : [],
@@ -49,7 +49,7 @@ export function privacyCopy({ online }: { online: boolean }): PrivacyCopy {
     ],
     retention: [
       "We keep emails as long as we need them to talk about your project.",
-      ...(online ? ["Call records, meaning the summary and the details saved from a call, are kept for 12 months after the call and then deleted."] : []),
+      ...(online ? ["Call records, meaning the written transcript, the summary and the details saved from a call, are kept for 12 months after the call and then deleted."] : []),
       "You can ask us to delete your data at any time.",
     ],
   };

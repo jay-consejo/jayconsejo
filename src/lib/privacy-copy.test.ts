@@ -30,6 +30,13 @@ describe("privacyCopy", () => {
     assert.match(privacyCopy({ online: true }).retention.join(" "), /12 months/);
   });
 
+  it("says the written transcript is kept with the call record, and the audio is not", () => {
+    const text = allText(true);
+    assert.doesNotMatch(text, /transcript is not kept/);
+    assert.match(text, /We do not record or keep the audio/);
+    assert.match(privacyCopy({ online: true }).retention.join(" "), /transcript[^.]*12 months/);
+  });
+
   it("never claims nothing is shared with third parties", () => {
     for (const online of [false, true]) {
       assert.doesNotMatch(allText(online), /(do not|never) (sell, rent, or )?share/i);
