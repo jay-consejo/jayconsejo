@@ -1,4 +1,4 @@
-import { WorkCard } from "@/components/work-card";
+import { WorkGrid } from "@/components/work-card";
 import { clientWork, productWork } from "@/lib/work";
 
 function Group({ label, items }: { label: string; items: typeof clientWork }) {
@@ -7,11 +7,7 @@ function Group({ label, items }: { label: string; items: typeof clientWork }) {
       <p className="text-xs font-medium tracking-[0.18em] text-text-secondary uppercase">
         {label}
       </p>
-      <div className="mt-5 grid gap-6 md:grid-cols-2">
-        {items.map((item) => (
-          <WorkCard key={item.slug} item={item} />
-        ))}
-      </div>
+      <WorkGrid items={items} />
     </div>
   );
 }

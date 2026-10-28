@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Mic, MicOff, PhoneOff } from "lucide-react";
+import { Captions, CaptionsOff, Check, Mic, MicOff, PhoneOff } from "lucide-react";
 import type { CallState, Caption, Lead } from "@/lib/sofia-call-client";
 import type { SofiaCall as Call } from "@/components/use-sofia-call";
 import { CallCards, formatLength } from "@/components/sofia-call-cards";
@@ -102,26 +102,9 @@ function LiveCall({
 }) {
   const elapsed = useElapsedSec(state.startedAt);
   const voice = voiceStatus({ speaking: state.sofiaSpeaking, muted: state.muted });
-  const list = useRef<HTMLOListElement | null>(null);
-  // Whether the caller was at the newest line before this update; scrolling up to read stops the follow.
-  const following = useRef(true);
+  // Hidden by default: reading along pulls attention from the conversation.
+  const [showTranscript, setShowTranscript] = useState(false);
   const lastSofia = [...captions].reverse().find((c) => c.role === "assistant" && c.final);
-
-  useEffect(() => {
-    const el = list.current;
-    if (el && following.current) el.scrollTop = el.scrollHeight;
-  }, [captions]);
-
-  // Stay on the newest line when the list changes size (rotation, window resize).
-  useEffect(() => {
-    const el = list.current;
-    if (!el) return;
-    const observer = new ResizeObserver(() => {
-      if (following.current) el.scrollTop = el.scrollHeight;
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <div>
@@ -163,30 +146,17 @@ function LiveCall({
         </div>
       )}
 
-      <ol
-        ref={list}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          following.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
-        }}
-        tabIndex={0}
-        aria-label="Live captions"
-        className="sofia-captions grid max-h-75 gap-3.5 overflow-y-auto rounded-lg pt-2 pr-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-text"
+      <button
+        type="button"
+        onClick={() => setShowTranscript((v) => !v)}
+        aria-expanded={showTranscript}
+        aria-controls="sofia-transcript"
+        className="-ml-1 inline-flex h-11 items-center gap-2 rounded-full px-1 text-sm font-medium text-text-secondary transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text"
       >
-        {captions.map((c) => (
-          <li key={c.id} className="grid gap-0.5 text-base leading-relaxed sm:gap-3">
-            <span className={`pt-1 text-xs font-semibold tracking-[0.14em] uppercase ${c.role === "assistant" ? "text-accent-text" : "text-text-secondary"}`}>
-              {c.role === "assistant" ? "Sofia" : "You"}
-            </span>
-            <span
-              data-pending={c.final ? undefined : ""}
-              className={c.role === "assistant" && c.final ? "text-foreground" : "text-text-secondary"}
-            >
-              {c.text}
-            </span>
-          </li>
-        ))}
-      </ol>
+        {showTranscript ? <CaptionsOff className="size-5" aria-hidden /> : <Captions className="size-5" aria-hidden />}
+        {showTranscript ? "Hide transcript" : "Show transcript"}
+      </button>
+      {showTranscript && <Transcript captions={captions} />}
       <div className="sr-only" aria-live="polite">
         {lastSofia ? `Sofia: ${lastSofia.text}` : ""}
       </div>
@@ -215,6 +185,56 @@ function LiveCall({
       </div>
       <p className="mt-3.5 text-center text-xs text-text-secondary sm:text-left">Recorded so Jay can follow up.</p>
     </div>
+  );
+}
+
+function Transcript({ captions }: { captions: Caption[] }) {
+  const list = useRef<HTMLOListElement | null>(null);
+  // Whether the caller was at the newest line before this update; scrolling up to read stops the follow.
+  const following = useRef(true);
+
+  useEffect(() => {
+    const el = list.current;
+    if (el && following.current) el.scrollTop = el.scrollHeight;
+  }, [captions]);
+
+  // Stay on the newest line when the list changes size (rotation, window resize).
+  useEffect(() => {
+    const el = list.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      if (following.current) el.scrollTop = el.scrollHeight;
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <ol
+      ref={list}
+      id="sofia-transcript"
+      onScroll={(e) => {
+        const el = e.currentTarget;
+        following.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+      }}
+      tabIndex={0}
+      aria-label="Live transcript"
+      className="sofia-captions grid max-h-75 gap-3.5 overflow-y-auto rounded-lg pt-2 pr-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-text"
+    >
+      {captions.map((c) => (
+        <li key={c.id} className="grid gap-0.5 text-base leading-relaxed sm:gap-3">
+          <span className={`pt-1 text-xs font-semibold tracking-[0.14em] uppercase ${c.role === "assistant" ? "text-accent-text" : "text-text-secondary"}`}>
+            {c.role === "assistant" ? "Sofia" : "You"}
+          </span>
+          <span
+            data-pending={c.final ? undefined : ""}
+            className={c.role === "assistant" && c.final ? "text-foreground" : "text-text-secondary"}
+          >
+            {c.text}
+          </span>
+        </li>
+      ))}
+    </ol>
   );
 }
 

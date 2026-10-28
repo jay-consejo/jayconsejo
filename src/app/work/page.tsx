@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { WorkCard } from "@/components/work-card";
+import { WorkGrid } from "@/components/work-card";
 import { clientWork, productWork } from "@/lib/work";
 import { siteConfig } from "@/lib/site-config";
 import { BOOK_CALL_LINE } from "@/lib/sofia-switch";
@@ -34,21 +34,13 @@ export default function WorkIndexPage() {
             <p className="text-xs font-medium tracking-[0.18em] text-text-secondary uppercase">
               Client systems
             </p>
-            <div className="mt-5 grid gap-6 md:grid-cols-2">
-              {clientWork.map((item) => (
-                <WorkCard key={item.slug} item={item} />
-              ))}
-            </div>
+            <WorkGrid items={clientWork} />
           </div>
           <div>
             <p className="text-xs font-medium tracking-[0.18em] text-text-secondary uppercase">
               Products
             </p>
-            <div className="mt-5 grid gap-6 md:grid-cols-2">
-              {productWork.map((item) => (
-                <WorkCard key={item.slug} item={item} />
-              ))}
-            </div>
+            <WorkGrid items={productWork} />
           </div>
         </div>
 

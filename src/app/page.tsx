@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { Hero } from "@/components/sections/hero";
 import { TrustSignals } from "@/components/sections/trust-signals";
 import { Process } from "@/components/sections/process";
@@ -9,9 +8,7 @@ import { Contact } from "@/components/sections/contact";
 import { ContactEmail } from "@/components/sections/contact-email";
 import { SOFIA_ONLINE } from "@/lib/sofia-switch";
 
-export default async function Home() {
-  const h = await headers();
-  const country = h.get("x-vercel-ip-country") ?? "PH";
+export default function Home() {
   // Server-only switch: until cutover, production leaves it unset and keeps ElevenLabs.
   const provider = process.env.SOFIA_PROVIDER === "nova" ? "nova" : "elevenlabs";
 
@@ -23,7 +20,7 @@ export default async function Home() {
       <Work />
       <About />
       <TrackRecord />
-      {SOFIA_ONLINE ? <Contact defaultCountry={country} provider={provider} /> : <ContactEmail />}
+      {SOFIA_ONLINE ? <Contact provider={provider} /> : <ContactEmail />}
     </>
   );
 }

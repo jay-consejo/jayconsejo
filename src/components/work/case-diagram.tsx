@@ -1,4 +1,4 @@
-type DiagramId = "pricing" | "finance";
+type DiagramId = "pricing" | "finance" | "embedded";
 
 type Stagger = { i?: number };
 type BoxProps = Stagger & {
@@ -317,9 +317,83 @@ function FinanceTall() {
   );
 }
 
+const EMBEDDED_TITLE = "Stock signal to closed order";
+
+/** Same geometry as the pricing flow: the purchasing loop up top, the other workstreams below. */
+function EmbeddedWide() {
+  const m = "arrow-embedded-w";
+  return (
+    <Frame marker={m} title={EMBEDDED_TITLE} w={640} h={360}>
+      <Box x={32} y={90} label="3PL stock feed" sub="every 30 minutes" i={0} />
+      <Arrow marker={m} d="M160 116 H188" i={0} />
+      <Box x={190} y={90} label="Reorder Check" sub="every step shown" i={1} />
+      <Arrow marker={m} d="M318 116 H346" i={1} />
+      <Box x={348} y={90} label="Purchase order" sub="MOQ · boxes · pallets" i={2} />
+      <Arrow marker={m} d="M476 116 H504" i={2} />
+      <Box x={506} y={90} w={102} label="Approval" sub="never your own" accent i={3} />
+
+      <Arrow marker={m} d="M557 142 V190 H540" i={3} />
+      <Box x={412} y={190} label="Shipment" sub="ship date + tracking" i={4} />
+      <Arrow marker={m} d="M412 216 H384" i={4} />
+      <Box x={254} y={190} label="Receiving" sub="by the 3PL's count" i={5} />
+      <Arrow marker={m} d="M254 216 H226" i={5} />
+      <Box x={96} y={190} label="Paid & closed" sub="follow-ups tracked" accent i={6} />
+
+      <Box x={32} y={282} w={150} h={44} label="Support inbox" sub="870 noise tickets closed" i={7} />
+      <Box x={198} y={282} w={150} h={44} label="Knowledge base" sub="answers from articles only" i={8} />
+      <Box x={364} y={282} w={150} h={44} label="Accessibility audit" sub="WCAG 2.2 AA" i={9} />
+      {/* Longer than the pricing stack line, so it sits under the bottom row instead of beside it. */}
+      <text x={608} y={348} textAnchor="end" fontSize={9.5} fill="var(--muted-foreground)">
+        FastAPI · React · Railway
+      </text>
+    </Frame>
+  );
+}
+
+/** Same seven steps as the wide layout, stacked so they fit a 375px screen. */
+function EmbeddedTall() {
+  const m = "arrow-embedded-t";
+  return (
+    <Frame marker={m} title={EMBEDDED_TITLE} w={320} h={554}>
+      <Box x={30} y={46} w={260} h={44} label="3PL stock feed" sub="every 30 minutes" i={0} />
+      <Arrow marker={m} d="M160 90 V106" i={0} />
+      <Box x={30} y={108} w={260} h={44} label="Reorder Check" sub="every step shown" i={1} />
+      <Arrow marker={m} d="M160 152 V168" i={1} />
+      <Box x={30} y={170} w={260} h={44} label="Purchase order" sub="MOQ · boxes · pallets" i={2} />
+      <Arrow marker={m} d="M160 214 V230" i={2} />
+      <Box x={30} y={232} w={260} h={44} label="Approval" sub="never your own" accent i={3} />
+      <Arrow marker={m} d="M160 276 V292" i={3} />
+      <Box x={30} y={294} w={260} h={44} label="Shipment" sub="ship date + tracking" i={4} />
+      <Arrow marker={m} d="M160 338 V354" i={4} />
+      <Box x={30} y={356} w={260} h={44} label="Receiving" sub="by the 3PL's count" i={5} />
+      <Arrow marker={m} d="M160 400 V416" i={5} />
+      <Box x={30} y={418} w={260} h={44} label="Paid & closed" sub="follow-ups tracked" accent i={6} />
+
+      <Box x={30} y={484} w={84} h={32} fs={10} label="Support inbox" i={7} />
+      <Box x={118} y={484} w={84} h={32} fs={10} label="Knowledge base" i={8} />
+      <Box x={206} y={484} w={84} h={32} fs={10} label="Accessibility" i={9} />
+      <text x={290} y={538} textAnchor="end" fontSize={9.5} fill="var(--muted-foreground)">
+        FastAPI · React · Railway
+      </text>
+    </Frame>
+  );
+}
+
+const WIDE: Record<DiagramId, () => React.JSX.Element> = {
+  pricing: PricingWide,
+  finance: FinanceWide,
+  embedded: EmbeddedWide,
+};
+const TALL: Record<DiagramId, () => React.JSX.Element> = {
+  pricing: PricingTall,
+  finance: FinanceTall,
+  embedded: EmbeddedTall,
+};
+
 /** Landscape only — used as card media, where the diagram is a thumbnail. */
 export function CaseDiagram({ id }: { id: DiagramId }) {
-  return id === "pricing" ? <PricingWide /> : <FinanceWide />;
+  const Wide = WIDE[id];
+  return <Wide />;
 }
 
 /**
@@ -330,10 +404,16 @@ export function CaseDiagram({ id }: { id: DiagramId }) {
  * the `.case-figure .flow` rule in globals.css for why. Keep it that way.
  */
 export function CaseFigure({ id }: { id: DiagramId }) {
+  const Tall = TALL[id];
+  const Wide = WIDE[id];
   return (
     <>
-      <div className="sm:hidden">{id === "pricing" ? <PricingTall /> : <FinanceTall />}</div>
-      <div className="max-sm:hidden">{id === "pricing" ? <PricingWide /> : <FinanceWide />}</div>
+      <div className="sm:hidden">
+        <Tall />
+      </div>
+      <div className="max-sm:hidden">
+        <Wide />
+      </div>
     </>
   );
 }

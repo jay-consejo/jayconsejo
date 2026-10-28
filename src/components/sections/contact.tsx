@@ -76,7 +76,7 @@ function validateLead(
 }
 
 export function Contact({
-  defaultCountry = "PH",
+  defaultCountry = "US",
   provider = "elevenlabs",
 }: {
   defaultCountry?: string;
