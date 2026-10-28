@@ -26,7 +26,7 @@ export function privacyCopy({ online }: { online: boolean }): PrivacyCopy {
     call: online
       ? [
           "Sofia is an AI voice assistant. Your voice is processed live by Amazon Nova Sonic on Amazon Bedrock so that Sofia can understand and answer you, and the call is transcribed as it happens. We do not record or keep the audio.",
-          "After the call, the transcript is summarized by AI, using Mistral on Amazon Bedrock. The written transcript, the summary, your name, email address and WhatsApp number, and details from the call such as your project type, budget range and timeline are saved to a Google Sheet that only Jay can open.",
+          "After the call, the transcript is summarized by AI, using Mistral on Amazon Bedrock. The written transcript, the summary, your name, email address and WhatsApp number, and details from the call such as your project type, budget range and timeline are saved to a Google Sheet that only Jay can open. The written transcript is also saved as a Google Doc in a private Google Drive folder that only Jay can open.",
           "Before a call starts, we check your email address and WhatsApp number against recent calls, to limit repeat calls. If you book a meeting during the call, your name and email address go to Jay's Google Calendar, which sends you the invite.",
         ]
       : [],
@@ -37,7 +37,7 @@ export function privacyCopy({ online }: { online: boolean }): PrivacyCopy {
       ...(online
         ? [
             { name: "Amazon Web Services", use: "runs the call server, and Amazon Nova Sonic and Mistral on Amazon Bedrock." },
-            { name: "Google Sheets and Google Calendar", use: "store call records and send meeting invites." },
+            { name: "Google Sheets, Google Docs and Google Calendar", use: "store call records and transcripts, and send meeting invites." },
           ]
         : []),
     ],
