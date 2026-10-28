@@ -15,7 +15,7 @@ import { searchCountries } from "@/lib/country-search";
 
 type Option = { value?: Country | undefined; label: string; divider?: boolean };
 
-type IconProps = { country?: Country; countryName?: string; "aria-hidden"?: boolean };
+type IconProps = { country?: Country; label: string; "aria-hidden"?: boolean };
 
 type Props = {
   name?: string;
@@ -77,9 +77,13 @@ export function CountrySelect({
     setQuery("");
     if (refocus) buttonRef.current?.focus();
   };
+  // After a pick, the cursor goes to the number field so the visitor can keep typing.
   const pick = (opt: Option) => {
     onChange(opt.value);
-    closeMenu(true);
+    closeMenu(false);
+    const number = wrapRef.current?.parentElement?.querySelector<HTMLInputElement>("input.PhoneInputInput");
+    if (number) requestAnimationFrame(() => number.focus());
+    else buttonRef.current?.focus();
   };
 
   useEffect(() => {
@@ -158,7 +162,7 @@ export function CountrySelect({
         onBlur={onBlur}
         className="jc-country-trigger"
       >
-        <Icon country={value} countryName={selectedLabel} aria-hidden />
+        <Icon country={value} label={selectedLabel} aria-hidden />
         <svg className="jc-country-chevron" viewBox="0 0 10 6" width="10" height="6" aria-hidden>
           <path
             d="M1 1l4 4 4-4"
@@ -215,7 +219,7 @@ export function CountrySelect({
                   onClick={() => pick(opt)}
                   className="jc-country-option"
                 >
-                  <Icon country={opt.value} countryName={opt.label} aria-hidden />
+                  <Icon country={opt.value} label={opt.label} aria-hidden />
                   <span className="jc-country-name">{opt.label}</span>
                   {code && <span className="jc-country-code">+{code}</span>}
                 </li>

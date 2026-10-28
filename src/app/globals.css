@@ -343,7 +343,6 @@
 }
 .jc-country-option[data-active="true"] {
   background: color-mix(in oklab, var(--accent-gold) 16%, transparent);
-  color: var(--accent-gold);
   outline: none;
 }
 .jc-country-option[aria-selected="true"] {
