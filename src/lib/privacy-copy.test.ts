@@ -18,7 +18,7 @@ describe("privacyCopy", () => {
 
   it("names every service that handles a call once Sofia is online", () => {
     const text = allText(true);
-    for (const name of ["Amazon Bedrock", "Nova Sonic", "Mistral", "Google Sheets", "Google Calendar", "Cloudflare", "Vercel"]) {
+    for (const name of ["Amazon Bedrock", "Nova Sonic", "Mistral", "Google Sheets", "Google Docs", "Google Calendar", "Cloudflare", "Vercel"]) {
       assert.ok(text.includes(name), `missing ${name}`);
     }
   });
@@ -34,6 +34,7 @@ describe("privacyCopy", () => {
     const text = allText(true);
     assert.doesNotMatch(text, /transcript is not kept/);
     assert.match(text, /We do not record or keep the audio/);
+    assert.match(text, /transcript is also saved as a Google Doc[^.]*only Jay can open/);
     assert.match(privacyCopy({ online: true }).retention.join(" "), /transcript[^.]*12 months/);
   });
 
