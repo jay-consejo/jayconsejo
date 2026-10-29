@@ -18,7 +18,7 @@ describe("privacyCopy", () => {
 
   it("names every service that handles a call once Sofia is online", () => {
     const text = allText(true);
-    for (const name of ["Amazon Bedrock", "Nova Sonic", "Mistral", "Google Sheets", "Google Docs", "Google Calendar", "Cloudflare", "Vercel"]) {
+    for (const name of ["Amazon Bedrock", "Nova Sonic", "Mistral", "Google Sheets", "Google Docs", "Google Drive", "Google Calendar", "Cloudflare", "Vercel"]) {
       assert.ok(text.includes(name), `missing ${name}`);
     }
   });
@@ -30,12 +30,12 @@ describe("privacyCopy", () => {
     assert.match(privacyCopy({ online: true }).retention.join(" "), /12 months/);
   });
 
-  it("says the written transcript is kept with the call record, and the audio is not", () => {
+  it("says the call is recorded, where the recording and transcript are kept, and for how long", () => {
     const text = allText(true);
-    assert.doesNotMatch(text, /transcript is not kept/);
-    assert.match(text, /We do not record or keep the audio/);
-    assert.match(text, /transcript is also saved as a Google Doc[^.]*only Jay can open/);
-    assert.match(privacyCopy({ online: true }).retention.join(" "), /transcript[^.]*12 months/);
+    assert.doesNotMatch(text, /transcript is not kept|do not record/i);
+    assert.match(text, /The call is recorded/);
+    assert.match(text, /audio recording and the written transcript are saved in a private Google Drive folder that only Jay can open/);
+    assert.match(privacyCopy({ online: true }).retention.join(" "), /audio recording, the written transcript[^.]*12 months/);
   });
 
   it("never claims nothing is shared with third parties", () => {
