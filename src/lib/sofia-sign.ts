@@ -4,11 +4,8 @@ import { mintTicket, type TicketLead } from "./sofia-ticket.ts";
 
 /**
  * POST /api/sofia/sign: vets the caller's details, then hands back what the browser needs
- * to start a call. Two providers sit behind it while the voice stack moves over:
- * - ElevenLabs (default): a signed conversation URL from their API.
- * - Nova (`SOFIA_PROVIDER=nova`): a one-use ticket for our own voice relay, plus the vetted
- *   lead. The browser must send that exact lead back to the relay, because the ticket
- *   carries a hash of it.
+ * to start a call: a one-use ticket for our voice relay, plus the vetted lead. The browser
+ * must send that exact lead back to the relay, because the ticket carries a hash of it.
  * Everything the handler touches from outside comes in through `SignDeps`, so tests can
  * drive every branch without a network or a clock.
  */
@@ -30,9 +27,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTROL_CHARS = /\p{Cc}/u;
 const MAX_NAME_LENGTH = 80;
 const MAX_EMAIL_LENGTH = 254;
-const SIGNED_URL_SAFETY_MS = 14 * 60 * 1000;
 const HEALTH_TIMEOUT_MS = 1_500;
-/** check_contact and ElevenLabs: give up and take the failure path instead of holding the caller. */
+/** check_contact: give up and let the call go ahead instead of holding the caller. */
 const OUTSIDE_TIMEOUT_MS = 5_000;
 const MIN_SECRET_LENGTH = 32;
 
@@ -136,7 +132,7 @@ function previewOrigins(env: SignDeps["env"]): string[] {
 }
 
 /**
- * Only our own pages may spend a caller's tickets or signed URLs. The local origin is allowed
+ * Only our own pages may spend a caller's tickets. The local origin is allowed
  * in development, and for a local production build that talks to a relay on this machine.
  */
 function originAllowed(origin: string | null, env: SignDeps["env"]): boolean {
@@ -201,12 +197,8 @@ async function relayHealthy(healthUrl: string, deps: SignDeps): Promise<boolean>
 
 export function createSignHandler(deps: SignDeps): (req: Request) => Promise<Response> {
   return async function handleSign(req) {
-    const nova = deps.env.SOFIA_PROVIDER === "nova";
     const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
-      Response.json(body, {
-        status,
-        headers: nova ? { "Cache-Control": "no-store", ...headers } : headers,
-      });
+      Response.json(body, { status, headers: { "Cache-Control": "no-store", ...headers } });
 
     if (deps.online === false) {
       return json({ error: "Sofia is offline." }, 503);
@@ -258,7 +250,7 @@ export function createSignHandler(deps: SignDeps): (req: Request) => Promise<Res
       );
     }
 
-    return nova ? signNova(lead, ip, ipKey, deps, json) : signElevenLabs(lead, ipKey, deps, json);
+    return signNova(lead, ip, ipKey, deps, json);
   };
 }
 
@@ -288,39 +280,4 @@ async function signNova(lead: Lead, ip: string, ipKey: string, deps: SignDeps, j
     `[sofia/sign] ticket ip=${ipKey} name=${shortHash(lead.name)} email=${shortHash(lead.email)} t=${deps.now()}`,
   );
   return json({ ticket, relayUrl, lead, expiresAt });
-}
-
-async function signElevenLabs(lead: Lead, ipKey: string, deps: SignDeps, json: Json): Promise<Response> {
-  const apiKey = deps.env.ELEVENLABS_API_KEY;
-  const agentId = deps.env.ELEVENLABS_AGENT_ID;
-  if (!apiKey || !agentId) {
-    deps.logError("[sofia/sign] Missing ELEVENLABS_API_KEY or ELEVENLABS_AGENT_ID");
-    return json({ error: GENERIC_FAILURE }, 502);
-  }
-
-  try {
-    const res = await deps.fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${encodeURIComponent(agentId)}`,
-      { headers: { "xi-api-key": apiKey }, signal: AbortSignal.timeout(OUTSIDE_TIMEOUT_MS) },
-    );
-    if (!res.ok) {
-      const errBody = await res.text().catch(() => "");
-      deps.logError(`[sofia/sign] ElevenLabs ${res.status} ${errBody}`);
-      return json({ error: GENERIC_FAILURE }, 502);
-    }
-    const data = (await res.json()) as { signed_url?: string };
-    if (!data.signed_url) {
-      deps.logError("[sofia/sign] Missing signed_url in ElevenLabs response");
-      return json({ error: GENERIC_FAILURE }, 502);
-    }
-
-    const timestamp = deps.now();
-    deps.log(
-      `[sofia/sign] signed ip=${ipKey} name=${shortHash(lead.name)} email=${shortHash(lead.email)} t=${timestamp}`,
-    );
-    return json({ signedUrl: data.signed_url, expiresAt: timestamp + SIGNED_URL_SAFETY_MS });
-  } catch (err) {
-    deps.logError("[sofia/sign] network error", err);
-    return json({ error: GENERIC_FAILURE }, 502);
-  }
 }

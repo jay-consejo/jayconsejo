@@ -29,7 +29,6 @@ function setup(
   const deps: SignDeps = {
     env: {
       NODE_ENV: "production",
-      SOFIA_PROVIDER: "nova",
       SOFIA_RELAY_URL: RELAY,
       SOFIA_TICKET_SECRET: SECRET,
       ...opts.env,
@@ -72,7 +71,7 @@ function assertNoLeaks(logs: string[], ...values: string[]) {
   }
 }
 
-describe("sofia sign: Nova", () => {
+describe("sofia sign", () => {
   it("returns a ticket, the relay URL and the vetted lead, uncached", async () => {
     const { handle, logs, calls } = setup();
     const res = await handle(request(FORM));
@@ -285,48 +284,6 @@ describe("sofia sign: Nova", () => {
   });
 });
 
-describe("sofia sign: ElevenLabs (default provider)", () => {
-  const eleven = { SOFIA_PROVIDER: undefined, ELEVENLABS_API_KEY: "el-key-value", ELEVENLABS_AGENT_ID: "agent-1" };
-  const signed: Route = async () => Response.json({ signed_url: "wss://eleven.example.test/convai?sig=abc" });
-
-  it("returns a signed URL to our own origin and logs a hashed IP", async () => {
-    const { handle, logs } = setup({
-      env: eleven,
-      routes: { "https://api.elevenlabs.io/": signed },
-    });
-    const res = await handle(request(FORM));
-    assert.equal(res.status, 200);
-    const data = await res.json();
-    assert.equal(data.signedUrl, "wss://eleven.example.test/convai?sig=abc");
-    assert.equal(data.expiresAt, NOW + 14 * 60 * 1000);
-    assert.ok(logs.some((l) => l.startsWith("[sofia/sign] signed ip=")));
-    assertNoLeaks(logs, IP, "el-key-value");
-  });
-
-  it("refuses other origins and requests with no origin", async () => {
-    const refused: Record<string, string>[] = [{ origin: "https://evil.example" }, {}, { origin: "http://localhost:3000" }];
-    for (const headers of refused) {
-      const { handle, calls } = setup({ env: eleven, routes: { "https://api.elevenlabs.io/": signed } });
-      const res = await handle(request(FORM, headers));
-      assert.equal(res.status, 403, JSON.stringify(headers));
-      assert.deepEqual(calls, [], "no signed URL or logger lookup for a refused origin");
-    }
-  });
-
-  it("accepts localhost in development", async () => {
-    const { handle } = setup({
-      env: { ...eleven, NODE_ENV: "development" },
-      routes: { "https://api.elevenlabs.io/": signed },
-    });
-    assert.equal((await handle(request(FORM, { origin: "http://localhost:3000" }))).status, 200);
-  });
-
-  it("returns 502 when its keys are missing", async () => {
-    const { handle } = setup({ env: { ...eleven, ELEVENLABS_API_KEY: undefined } });
-    assert.equal((await handle(request(FORM))).status, 502);
-  });
-});
-
 describe("sofia sign: outside calls time out after 5 s", () => {
   const hang: Route = (_url, init) =>
     new Promise((_resolve, reject) => {
@@ -338,49 +295,34 @@ describe("sofia sign: outside calls time out after 5 s", () => {
     return { res, ms: Date.now() - started };
   };
 
-  it("lets the call go ahead when check_contact hangs, and returns 502 when ElevenLabs hangs", { timeout: 10_000 }, async () => {
+  it("lets the call go ahead when check_contact hangs", { timeout: 10_000 }, async () => {
     const logger = setup({
       env: { SOFIA_LOGGER_URL: LOGGER, SOFIA_LOGGER_API_KEY: "logger-key-value" },
       routes: { [LOGGER]: hang },
     });
-    const eleven = setup({
-      env: { SOFIA_PROVIDER: undefined, ELEVENLABS_API_KEY: "el-key-value", ELEVENLABS_AGENT_ID: "agent-1" },
-      routes: { "https://api.elevenlabs.io/": hang },
-    });
-    const [a, b] = await Promise.all([timed(() => logger.handle(request(FORM))), timed(() => eleven.handle(request(FORM)))]);
+    const { res, ms } = await timed(() => logger.handle(request(FORM)));
 
-    assert.equal(a.res.status, 200, "check_contact fails open");
-    assert.ok((await a.res.json()).ticket);
-    assert.equal(b.res.status, 502);
-    for (const { ms } of [a, b]) assert.ok(ms >= 4_500 && ms < 6_500, `gave up after ${ms} ms`);
-    assertNoLeaks([...logger.logs, ...eleven.logs], IP, "logger-key-value", "el-key-value");
+    assert.equal(res.status, 200, "check_contact fails open");
+    assert.ok((await res.json()).ticket);
+    assert.ok(ms >= 4_500 && ms < 6_500, `gave up after ${ms} ms`);
+    assertNoLeaks(logger.logs, IP, "logger-key-value");
   });
 });
 
-describe("sofia sign: content type (both providers)", () => {
-  const providers = {
-    nova: {},
-    elevenlabs: { SOFIA_PROVIDER: undefined, ELEVENLABS_API_KEY: "el-key-value", ELEVENLABS_AGENT_ID: "agent-1" },
-  };
-  const signed: Route = async () => Response.json({ signed_url: "wss://eleven.example.test/convai?sig=abc" });
-
+describe("sofia sign: content type", () => {
   it("refuses a body that isn't sent as JSON with 415", async () => {
-    for (const [name, env] of Object.entries(providers)) {
-      for (const type of ["text/plain", "application/x-www-form-urlencoded", "multipart/form-data; boundary=x", ""]) {
-        const { handle, calls } = setup({ env, routes: { "https://api.elevenlabs.io/": signed } });
-        const res = await handle(request(FORM, { origin: SITE, "content-type": type }));
-        assert.equal(res.status, 415, `${name} ${type || "(none)"}`);
-        assert.deepEqual(calls, [], "no outside calls for a non-JSON body");
-      }
+    for (const type of ["text/plain", "application/x-www-form-urlencoded", "multipart/form-data; boundary=x", ""]) {
+      const { handle, calls } = setup();
+      const res = await handle(request(FORM, { origin: SITE, "content-type": type }));
+      assert.equal(res.status, 415, type || "(none)");
+      assert.deepEqual(calls, [], "no outside calls for a non-JSON body");
     }
   });
 
   it("accepts application/json with parameters, in any case", async () => {
-    for (const [name, env] of Object.entries(providers)) {
-      for (const type of ["application/json; charset=utf-8", "Application/JSON"]) {
-        const { handle } = setup({ env, routes: { "https://api.elevenlabs.io/": signed } });
-        assert.equal((await handle(request(FORM, { origin: SITE, "content-type": type }))).status, 200, `${name} ${type}`);
-      }
+    for (const type of ["application/json; charset=utf-8", "Application/JSON"]) {
+      const { handle } = setup();
+      assert.equal((await handle(request(FORM, { origin: SITE, "content-type": type }))).status, 200, type);
     }
   });
 });
@@ -400,18 +342,13 @@ describe("healthUrlFor", () => {
 });
 
 describe("sofia sign: offline", () => {
-  for (const provider of ["nova", undefined]) {
-    it(`refuses every request with 503 and calls nothing (provider ${provider ?? "elevenlabs"})`, async () => {
-      const { handle, calls } = setup({
-        online: false,
-        env: { SOFIA_PROVIDER: provider, ELEVENLABS_API_KEY: "k", ELEVENLABS_AGENT_ID: "a" },
-      });
-      for (const req of [request(FORM), request(FORM, {}), request("not json")]) {
-        const res = await handle(req);
-        assert.equal(res.status, 503);
-        assert.deepEqual(await res.json(), { error: "Sofia is offline." });
-      }
-      assert.deepEqual(calls, []);
-    });
-  }
+  it("refuses every request with 503 and calls nothing", async () => {
+    const { handle, calls } = setup({ online: false });
+    for (const req of [request(FORM), request(FORM, {}), request("not json")]) {
+      const res = await handle(req);
+      assert.equal(res.status, 503);
+      assert.deepEqual(await res.json(), { error: "Sofia is offline." });
+    }
+    assert.deepEqual(calls, []);
+  });
 });

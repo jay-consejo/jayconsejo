@@ -72,12 +72,12 @@ describe("contentSecurityPolicy", () => {
 });
 
 describe("next.config", () => {
-  it("sends the policy as report-only and hides x-powered-by", async () => {
+  it("enforces the policy on every page and hides x-powered-by", async () => {
     assert.equal(nextConfig.poweredByHeader, false);
     const rules = await nextConfig.headers!();
     const all = rules.find((r) => r.source === "/(.*)");
     const keys = all?.headers.map((h) => h.key) ?? [];
-    assert.ok(keys.includes("Content-Security-Policy-Report-Only"));
-    assert.ok(!keys.includes("Content-Security-Policy"));
+    assert.ok(keys.includes("Content-Security-Policy"));
+    assert.ok(!keys.includes("Content-Security-Policy-Report-Only"));
   });
 });

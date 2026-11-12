@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import dynamic from "next/dynamic";
-import Script from "next/script";
 import { CheckCircle2, Mail } from "lucide-react";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import PhoneInput, { type Country } from "react-phone-number-input";
@@ -39,13 +38,6 @@ type FieldErrors = Partial<Record<keyof Lead, string>>;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const DISCONNECT_EVENTS = [
-  "elevenlabs-convai:call-ended",
-  "elevenlabs-convai:disconnect",
-  "call-ended",
-  "disconnect",
-] as const;
-
 type ValidationResult =
   | { ok: true; lead: Lead }
   | { ok: false; errors: FieldErrors };
@@ -75,22 +67,13 @@ function validateLead(
   return { ok: true, lead: { name, email, whatsapp: parsed!.number } };
 }
 
-export function Contact({
-  defaultCountry = "US",
-  provider = "elevenlabs",
-}: {
-  defaultCountry?: string;
-  provider?: "nova" | "elevenlabs";
-}) {
+export function Contact({ defaultCountry = "US" }: { defaultCountry?: string }) {
   const { status, setStatus } = useSofiaState();
   const [lead, setLead] = useState<Lead | null>(null);
-  const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [whatsapp, setWhatsapp] = useState<string>(lead?.whatsapp ?? "");
-  const widgetContainerRef = useRef<HTMLDivElement | null>(null);
-  const nova = provider === "nova";
   const call = useSofiaCall((s) => {
     if (s.phase === "refused") {
       if (s.status === 409) {
@@ -104,12 +87,12 @@ export function Contact({
     }
     setStatus(STATUS_FOR[s.phase]);
   });
-  const novaPhase = nova && call.state && call.state.phase !== "refused" ? call.state.phase : null;
+  const callPhase = call.state && call.state.phase !== "refused" ? call.state.phase : null;
   // The progress strip under the card: 0 submit, 1 talk, 2 brief. Hidden on the fallback cards.
   const stripStep =
-    novaPhase === "busy" || novaPhase === "fallback" ? null : novaPhase === "ended" ? 2 : novaPhase ? 1 : 0;
+    callPhase === "busy" || callPhase === "fallback" ? null : callPhase === "ended" ? 2 : callPhase ? 1 : 0;
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const result = validateLead(new FormData(e.currentTarget), whatsapp);
     if (!result.ok) {
@@ -119,116 +102,15 @@ export function Contact({
     setErrors({});
     setLead(result.lead);
     setErrorMsg(null);
-    if (nova) {
-      // Before any await: the call's audio has to start inside this gesture.
-      call.start(result.lead);
-      return;
-    }
-    setStatus("signing");
-
-    try {
-      const res = await fetch("/api/sofia/sign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.lead),
-      });
-
-      if (res.status === 409) {
-        const body = (await res.json().catch(() => ({}))) as {
-          message?: string;
-        };
-        setServerMessage(
-          body.message ||
-            "We already have your info — Jay will reach out within 24 hours.",
-        );
-        setStatus("already_contacted");
-        return;
-      }
-
-      if (!res.ok) {
-        const body = (await res.json().catch(() => ({}))) as {
-          error?: string;
-        };
-        setErrorMsg(
-          res.status === 429
-            ? "Too many attempts — please wait a few minutes."
-            : res.status === 400
-              ? body.error || "Please check your info."
-              : "Couldn't start the call. Please try again.",
-        );
-        setStatus("error");
-        return;
-      }
-      const data = (await res.json()) as { signedUrl?: string };
-      if (!data.signedUrl) {
-        setErrorMsg("Couldn't start the call. Please try again.");
-        setStatus("error");
-        return;
-      }
-      setSignedUrl(data.signedUrl);
-      setStatus("talking");
-    } catch {
-      setErrorMsg("Network issue. Please try again.");
-      setStatus("error");
-    }
+    // Before any await: the call's audio has to start inside this gesture.
+    call.start(result.lead);
   }
-
-  function endCall() {
-    setSignedUrl(null);
-    setStatus("locked");
-  }
-
-  useEffect(() => {
-    if (status !== "talking") return;
-    const container = widgetContainerRef.current;
-    if (!container) return;
-
-    let cleanupFns: Array<() => void> = [];
-
-    const attachListeners = () => {
-      const widget = container.querySelector("elevenlabs-convai");
-      if (!widget) return false;
-      const onEnd = (e: Event) => {
-        console.log(`[sofia] widget disconnect event: ${e.type}`);
-        setSignedUrl(null);
-        setStatus("locked");
-      };
-      DISCONNECT_EVENTS.forEach((name) => {
-        widget.addEventListener(name, onEnd as EventListener);
-        cleanupFns.push(() =>
-          widget.removeEventListener(name, onEnd as EventListener),
-        );
-      });
-      return true;
-    };
-
-    if (!attachListeners()) {
-      const obs = new MutationObserver(() => {
-        if (attachListeners()) obs.disconnect();
-      });
-      obs.observe(container, { childList: true, subtree: true });
-      cleanupFns.push(() => obs.disconnect());
-    }
-
-    return () => {
-      cleanupFns.forEach((fn) => fn());
-      cleanupFns = [];
-    };
-  }, [status, signedUrl, setStatus]);
 
   return (
     <section
       id="contact"
       className="relative overflow-hidden px-6 py-24 md:py-32"
     >
-      {!nova && (
-        <Script
-          src="https://unpkg.com/@elevenlabs/convai-widget-embed@0.11.7/dist/index.js"
-          integrity="sha384-x7yFJgvQnkRfmQmewthtfovrSJn8TUMndQFtIm/KEsTdZcIUBh5kZwXKZ9RLXJ6y"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      )}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -251,51 +133,17 @@ export function Contact({
         </div>
 
         <div
-          className={`mt-12 rounded-2xl border border-border-subtle/80 bg-card/60 md:p-10 ${novaPhase === "talking" ? "p-5" : "p-8"}`}
+          className={`mt-12 rounded-2xl border border-border-subtle/80 bg-card/60 md:p-10 ${callPhase === "talking" ? "p-5" : "p-8"}`}
         >
-          {novaPhase && lead ? (
+          {callPhase && lead ? (
             <SofiaCall call={call} lead={lead} onRetry={() => call.start(lead)} />
-          ) : status === "locked" || status === "already_contacted" ? (
+          ) : status === "already_contacted" ? (
             <div className="space-y-4 py-4 text-center">
               <CheckCircle2 className="mx-auto size-12 text-accent-gold" aria-hidden />
-              <h3 className="font-display text-2xl font-semibold text-foreground">
-                {status === "locked"
-                  ? `Thanks, ${lead?.name ?? "there"}!`
-                  : "We already have your info"}
-              </h3>
-              <p className="text-text-secondary">
-                {status === "locked"
-                  ? `Jay will reach out within 24 hours. Check your email${lead?.email ? ` (${lead.email})` : ""} for the meeting invite — sender is consejo.jay@gmail.com.`
-                  : (serverMessage ?? "Jay will reach out within 24 hours.")}
-              </p>
+              <h3 className="font-display text-2xl font-semibold text-foreground">We already have your info</h3>
+              <p className="text-text-secondary">{serverMessage ?? "Jay will reach out within 24 hours."}</p>
               <p className="text-xs text-text-secondary/70">
                 If something urgent came up, reply to the invite email.
-              </p>
-            </div>
-          ) : status === "talking" && signedUrl && lead ? (
-            <div ref={widgetContainerRef} className="space-y-5">
-              <elevenlabs-convai
-                signed-url={signedUrl}
-                dynamic-variables={JSON.stringify(lead)}
-                variant="expanded"
-                default-expanded="true"
-                dismissible="false"
-              />
-              <button
-                type="button"
-                onClick={endCall}
-                className="text-xs font-medium tracking-[0.12em] text-text-secondary uppercase transition-colors hover:text-accent-gold"
-              >
-                End call
-              </button>
-            </div>
-          ) : status === "signing" ? (
-            <div className="py-10 text-center">
-              <p className="font-display text-2xl font-semibold text-accent-gold">
-                Preparing your call…
-              </p>
-              <p className="mt-3 text-text-secondary">
-                Sofia&apos;s warming up. One moment.
               </p>
             </div>
           ) : (
@@ -392,16 +240,12 @@ export function Contact({
 
               <div className="flex gap-3 rounded-xl border border-border-subtle bg-surface/60 p-4">
                 <Mail className="mt-0.5 size-5 shrink-0 text-accent-gold" />
-                {nova ? (
-                  <div>
-                    <FormNote />
-                    <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                      Your browser will ask to use your microphone. The call is recorded so I can follow up.
-                    </p>
-                  </div>
-                ) : (
+                <div>
                   <FormNote />
-                )}
+                  <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                    Your browser will ask to use your microphone. The call is recorded so I can follow up.
+                  </p>
+                </div>
               </div>
 
               <button
@@ -414,28 +258,7 @@ export function Contact({
           )}
         </div>
 
-        {nova ? (
-          stripStep !== null && <ProgressStrip current={stripStep} />
-        ) : (
-        <ol className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-2">
-          {timelineSteps.map((step, i) => (
-            <li
-              key={step}
-              className="flex items-center gap-3 text-xs font-medium tracking-[0.08em] text-text-secondary uppercase"
-            >
-              <span className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-accent-gold" aria-hidden />
-                {step}
-              </span>
-              {i < timelineSteps.length - 1 && (
-                <span className="text-muted-foreground" aria-hidden>
-                  →
-                </span>
-              )}
-            </li>
-          ))}
-        </ol>
-        )}
+        {stripStep !== null && <ProgressStrip current={stripStep} />}
       </div>
     </section>
   );

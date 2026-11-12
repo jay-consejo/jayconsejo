@@ -9,9 +9,6 @@ import { ContactEmail } from "@/components/sections/contact-email";
 import { SOFIA_ONLINE } from "@/lib/sofia-switch";
 
 export default function Home() {
-  // Server-only switch: until cutover, production leaves it unset and keeps ElevenLabs.
-  const provider = process.env.SOFIA_PROVIDER === "nova" ? "nova" : "elevenlabs";
-
   return (
     <>
       <Hero />
@@ -20,7 +17,7 @@ export default function Home() {
       <Work />
       <About />
       <TrackRecord />
-      {SOFIA_ONLINE ? <Contact provider={provider} /> : <ContactEmail />}
+      {SOFIA_ONLINE ? <Contact /> : <ContactEmail />}
     </>
   );
 }

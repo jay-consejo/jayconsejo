@@ -15,7 +15,7 @@ const securityHeaders = [
     value: "max-age=63072000; includeSubDomains; preload",
   },
   {
-    key: "Content-Security-Policy-Report-Only",
+    key: "Content-Security-Policy",
     value: contentSecurityPolicy({
       relayUrl: process.env.SOFIA_RELAY_URL,
       dev: process.env.NODE_ENV === "development",
